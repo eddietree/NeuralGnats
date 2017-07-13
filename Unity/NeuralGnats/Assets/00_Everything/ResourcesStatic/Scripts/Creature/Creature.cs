@@ -12,8 +12,12 @@ public class Creature : MonoBehaviour {
     CreatureThruster thrusterRight;
     Rigidbody2D rb;
 
+    NeuralNetwork neuralNet;
+    
     void Start ()
     {
+        neuralNet = new NeuralNetwork();
+
         rb = GetComponent<Rigidbody2D>();
 
         thrusterLeft = CreateThruster(thrusterLeftMount);
@@ -40,14 +44,12 @@ public class Creature : MonoBehaviour {
         {
             Vector2 fwd = transform.up;
 
-
             //Vector2 left = transform.position - thrusterLeft.transform.position;
             //Vector2 left = transform.position - thrusterLeft.transform.position;
             //Vector2 left = -transform.right;
             //Vector2 right = transform.right;
             Vector2 left = fwd;
             Vector2 right = fwd;
-
 
             //rb.AddForce(fwd*0.1f);
 
