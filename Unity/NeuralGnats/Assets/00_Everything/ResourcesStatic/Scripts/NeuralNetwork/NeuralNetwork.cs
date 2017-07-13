@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Creature : MonoBehaviour {
+public class NeuralNetwork : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
