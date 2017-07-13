@@ -5,18 +5,15 @@ using UnityEngine;
 public class Neuron
 {
     public float[] weights = null;
-    public NeuronLayer prevLayer = null;
     public float val = 0.0f;
 
     public Neuron()
     {}
 
-    public void ConnectWithPrevLayer(NeuronLayer _prevLayer)
+    public void InitWeights(int numWeights)
     {
-        prevLayer = _prevLayer;
-
-        // init rates
-        weights = new float[_prevLayer.neurons.Length];
+        // init weights
+        weights = new float[numWeights];
         for(int i = 0; i < weights.Length; ++i)
             weights[i] = UnityEngine.Random.Range(-0.5f, 0.5f);
     }
@@ -37,14 +34,41 @@ public class NeuronLayer
 
 public class NeuralNetwork
 {
-    // 1st val = input
-    // last val = output (left + right thurster)
-    static int[] layerSizes = new int[] { 3, 10, 10, 2 };
-
     NeuronLayer[] neuronLayers;
     //float fitness;
 
-    public NeuralNetwork()
+    public NeuralNetwork(NeuralNetwork other)
+    {
+        neuronLayers = new NeuronLayer[other.neuronLayers.Length];
+
+        // copy layers
+        for (int iLayer = 0; iLayer < other.neuronLayers.Length; ++iLayer)
+        {
+            var otherNeuronLayer = other.neuronLayers[iLayer];
+
+            var currNeuronLayer = new NeuronLayer();
+            currNeuronLayer.InitNeurons(otherNeuronLayer.neurons.Length);
+
+            // copy neurons
+            for(int iNeuron = 0; iNeuron < currNeuronLayer.neurons.Length; ++iNeuron)
+            {
+                var otherNeuron = otherNeuronLayer.neurons[iNeuron];
+                var currNeuron = currNeuronLayer.neurons[iNeuron];
+
+                currNeuron.InitWeights(otherNeuron.weights.Length);
+
+                // copy weights
+                for (int iWeight = 0; iWeight < otherNeuron.weights.Length; ++iWeight)
+                {
+                    currNeuron.weights[iWeight] = otherNeuron.weights[iWeight];
+                }
+            }
+
+            neuronLayers[iLayer] = currNeuronLayer;
+        }
+    }
+
+    public NeuralNetwork(int[] layerSizes)
     {
         neuronLayers = new NeuronLayer[layerSizes.Length];
 
@@ -64,7 +88,7 @@ public class NeuralNetwork
                 for (int iNeuron = 0; iNeuron < numNeuronsInLayer; ++iNeuron)
                 {
                     var neuron = currNeuronLayer.neurons[iNeuron];
-                    neuron.ConnectWithPrevLayer(prevNeuronLayer);
+                    neuron.InitWeights(prevNeuronLayer.neurons.Length);
                 }
             }
 
@@ -93,6 +117,8 @@ public class NeuralNetwork
         // feed-forward calculations
         for (int iNeuronLayer = 1; iNeuronLayer < neuronLayers.Length; ++iNeuronLayer)
         {
+            var prevNeuronLayer = neuronLayers[iNeuronLayer - 1];
+
             var currNeuronLayer = neuronLayers[iNeuronLayer];
             var currNeurons = currNeuronLayer.neurons;
 
@@ -104,7 +130,7 @@ public class NeuralNetwork
 
                 for(int iWeight = 0; iWeight < neuron.weights.Length; ++iWeight)
                 {
-                    var prevNeuronVal = neuron.prevLayer.neurons[iWeight].val;
+                    var prevNeuronVal = prevNeuronLayer.neurons[iWeight].val;
                     var weight = neuron.weights[iWeight];
 
                     result += weight * prevNeuronVal;

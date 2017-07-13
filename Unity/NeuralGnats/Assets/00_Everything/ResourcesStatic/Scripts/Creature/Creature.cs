@@ -12,11 +12,15 @@ public class Creature : MonoBehaviour {
     CreatureThruster thrusterRight;
     Rigidbody2D rb;
 
+    const int numFeelers = 5;
+
     NeuralNetwork neuralNet;
     
     void Start ()
     {
-        neuralNet = new NeuralNetwork();
+        int[] layerSizes = new int[] { 3, 10, 10, 2 };
+
+        neuralNet = new NeuralNetwork(layerSizes);
 
         rb = GetComponent<Rigidbody2D>();
 
@@ -26,6 +30,19 @@ public class Creature : MonoBehaviour {
 
         StartCoroutine(HandleSteering());	
 	}
+
+    private void Update()
+    {
+        DrawDebugLines();
+    }
+
+    void DrawDebugLines()
+    {
+        var lineStart = transform.position;
+        var lineDir = transform.up;
+
+        Debug.DrawLine(lineStart, lineStart + lineDir, Color.red);
+    }
 
     CreatureThruster CreateThruster(Transform parent)
     {
@@ -43,11 +60,6 @@ public class Creature : MonoBehaviour {
         while(true)
         {
             Vector2 fwd = transform.up;
-
-            //Vector2 left = transform.position - thrusterLeft.transform.position;
-            //Vector2 left = transform.position - thrusterLeft.transform.position;
-            //Vector2 left = -transform.right;
-            //Vector2 right = transform.right;
             Vector2 left = fwd;
             Vector2 right = fwd;
 
