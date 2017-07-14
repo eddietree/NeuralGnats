@@ -12,9 +12,11 @@ public class Creature : MonoBehaviour {
     CreatureThruster thrusterRight;
     Rigidbody2D rb;
 
+    bool isDead = false;
+
     const int numFeelers = 5;
     const float angleSpreadDegrees = 110.0f;
-    const float feelerDist = 2.0f;
+    const float feelerDist = 2.5f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -22,7 +24,12 @@ public class Creature : MonoBehaviour {
     public float[] neuralNetInput;
     public float[] neuralNetOutput;
 
+    public delegate void DeathEvent(Creature creature);
+    public DeathEvent eventDeath;
+
     NeuralNetwork neuralNet;
+
+    Coroutine threadSteering;
     
     void Start ()
     {
@@ -34,8 +41,35 @@ public class Creature : MonoBehaviour {
         thrusterRight = CreateThruster(thrusterRightMount);
         thrusterProto.SetActive(false);
 
-        StartCoroutine(HandleSteering());	
+        Reset();
 	}
+
+    private void Reset()
+    {
+        if (threadSteering != null)
+        {
+            StopCoroutine(threadSteering);
+            threadSteering = null;
+        }
+
+        threadSteering = StartCoroutine(HandleSteering());
+        isDead = false;
+    }
+
+    void OnDeath()
+    {
+        if (threadSteering != null)
+        {
+            StopCoroutine(threadSteering);
+            threadSteering = null;
+        }
+
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0.0f;
+
+        isDead = true;
+        GetComponent<BoxCollider2D>().enabled = false;
+    }
 
     void InitNeuralNetwork()
     {
@@ -57,7 +91,6 @@ public class Creature : MonoBehaviour {
     private void Update()
     {
         UpdateFeelers();
-        //DrawDebugLines();
     }
 
     void UpdateFeelers()
@@ -116,9 +149,6 @@ public class Creature : MonoBehaviour {
 
                 var angleMax = angleDelta;
                 var angleWeight = 1.0f- Mathf.Clamp01(angleBetween / angleMax);
-
-                //feelerHunger[iFeeler] = angleWeight;
-
                 feelerHunger[iFeeler] = Mathf.Clamp01((1.0f- distToFood/feelerDist) * angleWeight);
             }
             else
@@ -146,22 +176,6 @@ public class Creature : MonoBehaviour {
         neuralNet.FeedForward(neuralNetInput, neuralNetOutput);
     }
 
-    void DrawDebugLines()
-    {
-        var lineStart = transform.position;
-        
-        var angleMin = -angleSpreadDegrees;
-        var angleDelta = (angleSpreadDegrees * 2.0f) / (numFeelers-1.0f);
-
-        for (int iFeeler = 0; iFeeler < numFeelers; ++iFeeler)
-        {
-            var angle = angleMin + angleDelta * iFeeler;
-            var lineDir = Quaternion.Euler(0.0f, 0.0f, angle) * transform.up;
-
-            Debug.DrawLine(lineStart, lineStart + lineDir * feelerDist, Color.red);
-        }
-    }
-
     CreatureThruster CreateThruster(Transform parent)
     {
         var thrusterObj = GameObject.Instantiate(thrusterProto);
@@ -171,6 +185,15 @@ public class Creature : MonoBehaviour {
 
         CreatureThruster thruster = thrusterObj.GetComponent<CreatureThruster>();
         return thruster;
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        {
+            print("BOOM!");
+            OnDeath();
+        }
     }
 
     IEnumerator HandleSteering()
