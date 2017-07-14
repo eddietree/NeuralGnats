@@ -16,7 +16,7 @@ public class Creature : MonoBehaviour {
 
     const int numFeelers = 5;
     const float angleSpreadDegrees = 90.0f;
-    const float feelerDist = 2.5f;
+    const float feelerDist = 3.5f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -208,7 +208,7 @@ public class Creature : MonoBehaviour {
             if (eventEatFood != null)
                 eventEatFood(collision.gameObject);
 
-            fitness += 5.0f;
+            fitness += 1.5f;
             GameObject.Destroy(collision.gameObject);
         }
     }
@@ -266,7 +266,7 @@ public class Creature : MonoBehaviour {
 
             UpdateNeuralNetOutput();
 
-            fitness += Time.deltaTime * 0.01f;
+            fitness += Time.deltaTime * 0.1f;
 
             yield return null;
         }

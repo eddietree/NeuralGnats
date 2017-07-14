@@ -15,6 +15,17 @@ public class SimulationManager : MonoBehaviour {
         StartCoroutine(DoHandleGenerations());
     }
 	
+    GameObject SpawnFoodItem()
+    {
+        float foodSpawnRange = 1.75f;
+
+        var foodObj = GameObject.Instantiate(prefabFood);
+
+        foodObj.transform.position = new Vector3(Random.Range(-foodSpawnRange, foodSpawnRange), Random.Range(-foodSpawnRange, foodSpawnRange), 0.0f);
+
+        return foodObj;
+    }
+
 	IEnumerator DoHandleGenerations()
     {
         int numCreaturesPerGen = 12;
@@ -22,6 +33,8 @@ public class SimulationManager : MonoBehaviour {
 
         int numNeuralNetsPassed = numCreaturesPerGen / 4;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
+
+        SpawnFoodItem();
 
         // go thru all generations
         while (true)
@@ -45,7 +58,14 @@ public class SimulationManager : MonoBehaviour {
                     creature.neuralNet.Mutate();
                 }
 
+                // event - creature died :(
                 creature.eventDeath += () => { --numCreaturesAlive; };
+
+                // event - creature eats food
+                creature.eventEatFood += (GameObject foodItem) =>
+                {
+                    SpawnFoodItem();
+                };
             }
 
             // while simulation alive
@@ -59,14 +79,15 @@ public class SimulationManager : MonoBehaviour {
             // sort creatures by fitness (descending)
             creatures.Sort((x,y) => y.fitness.CompareTo(x.fitness));
 
-            // save neural nets
+            // copy highest fitness
+            generationFitness.Add(creatures[0].fitness);
+
+            // save neural nets to pass on
             passedOnNeuralNet.Clear();
             for (int i = 0; i < numNeuralNetsPassed; ++i)
-            {
                 passedOnNeuralNet.Add(creatures[i].neuralNet);
-            }
 
-            // delete
+            // delete all old creatures
             for (int i = 0; i < creatures.Count; ++i)
                 GameObject.Destroy(creatures[i].gameObject);
 
