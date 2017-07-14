@@ -48,7 +48,7 @@ public class SimulationManager : MonoBehaviour {
 	IEnumerator DoHandleGenerations()
     {
         //int numNeuralNetsPassed = numCreaturesPerGen / 10;
-        int numNeuralNetsPassed = 3;
+        int numNeuralNetsPassed = 1;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
         // go thru all generations
@@ -66,7 +66,7 @@ public class SimulationManager : MonoBehaviour {
             {
                 var creatureObj = GameObject.Instantiate(prefabCreature);
                 
-                creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
+                //creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
                 creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
                 //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
@@ -79,7 +79,9 @@ public class SimulationManager : MonoBehaviour {
                     var sourceNeuralNet = passedOnNeuralNet[i % passedOnNeuralNet.Count];
 
                     creature.neuralNet = new NeuralNetwork(sourceNeuralNet);
-                    creature.neuralNet.Mutate();
+
+                    print(creature.neuralNet.neuronLayers[1].neurons[0].weights[0]);
+                    //creature.neuralNet.Mutate();
                 }
 
                 // event - creature died :(

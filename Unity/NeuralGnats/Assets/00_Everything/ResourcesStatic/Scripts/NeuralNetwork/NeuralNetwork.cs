@@ -12,9 +12,11 @@ public class Neuron
 
     public void InitWeights(int numWeights)
     {
+        //UnityEngine.Random.InitState(505);
+
         // init weights
         weights = new float[numWeights];
-        for(int i = 0; i < weights.Length; ++i)
+        for (int i = 0; i < weights.Length; ++i)
             weights[i] = UnityEngine.Random.Range(-0.5f, 0.5f);
     }
 }
@@ -34,7 +36,7 @@ public class NeuronLayer
 
 public class NeuralNetwork
 {
-    NeuronLayer[] neuronLayers;
+    public NeuronLayer[] neuronLayers;
 
     public NeuralNetwork(NeuralNetwork other)
     {
@@ -63,6 +65,7 @@ public class NeuralNetwork
                     for (int iWeight = 0; iWeight < otherNeuron.weights.Length; ++iWeight)
                     {
                         currNeuron.weights[iWeight] = otherNeuron.weights[iWeight];
+                        currNeuron.val = 0.0f;
                     }
                 }
             }
@@ -73,6 +76,8 @@ public class NeuralNetwork
 
     public NeuralNetwork(int[] layerSizes)
     {
+        //UnityEngine.Random.InitState(505);
+
         neuronLayers = new NeuronLayer[layerSizes.Length];
 
         for (int iLayer = 0; iLayer < layerSizes.Length; ++iLayer)
