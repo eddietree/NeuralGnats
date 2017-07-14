@@ -102,6 +102,9 @@ public class Creature : MonoBehaviour {
         for (int i = 0; i < neuralNetInput.Length; ++i)
             neuralNetInput[i] = 0.0f;
 
+        for (int i = 0; i < neuralNetOutput.Length; ++i)
+            neuralNetOutput[i] = 0.0f;
+
         // neural nets
         int[] layerSizes = new int[] { numInputs, 10, numOutputs };
         neuralNet = new NeuralNetwork(layerSizes);
@@ -181,11 +184,8 @@ public class Creature : MonoBehaviour {
             neuralNetInput[i + numFeelers] = feelerHunger[i];
         }
 
-        var fwd = transform.up;
-
         neuralNetInput[numFeelers * 2+0] = rb.velocity.magnitude;
         neuralNetInput[numFeelers * 2+1] = rb.angularVelocity;
-        //neuralNetInput[numFeelers * 2+2] = Mathf.Atan2(fwd.y, fwd.x);
 
         // feed forward
         neuralNet.FeedForward(neuralNetInput, neuralNetOutput);
@@ -220,10 +220,6 @@ public class Creature : MonoBehaviour {
 
                 touchedZones.Add(collisionGameObj);
                 fitness += 1.0f;
-            }
-            else
-            {
-                int g = 5;
             }
         }
     }
@@ -299,8 +295,6 @@ public class Creature : MonoBehaviour {
                 if (Random.Range(0.0f, 1.0f) < forceRight)
                     thrusterRight.EmitParticles(1);
             }
-
-            UpdateNeuralNetOutput();
 
             lifeSpan -= Time.deltaTime;
             if (lifeSpan < 0.0f)

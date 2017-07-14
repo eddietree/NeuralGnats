@@ -60,10 +60,15 @@ public class SimulationManager : MonoBehaviour {
 
             List<Creature> creatures = new List<Creature>();
 
+            print("Create creatures..");
+
+
             // create creatures
             int numCreaturesAlive = numCreaturesPerGen;
             for (int i = 0; i < numCreaturesPerGen; ++i)
             {
+                UnityEngine.Random.InitState(505);
+
                 var creatureObj = GameObject.Instantiate(prefabCreature);
                 
                 //creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
@@ -132,6 +137,14 @@ public class SimulationManager : MonoBehaviour {
                 var neuralNetNew = new NeuralNetwork(creatures[i].neuralNet);
                 passedOnNeuralNet.Add(neuralNetNew);
             }
+
+            print("TOP CREATURE NEURAL NET:");
+            print(creatures[0].fitness);
+            print(creatures[0].neuralNet.neuronLayers[1].neurons[0].weights[0]);
+
+            print("SAVE NEURAL NET:");
+            print(passedOnNeuralNet[0].neuronLayers[1].neurons[0].weights[0]);
+
 
             // delete all old creatures
             for (int i = 0; i < creatures.Count; ++i)
