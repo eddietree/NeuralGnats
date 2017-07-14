@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: d85e3c2b0e531664f911ff76f0e35872
+timeCreated: 1500016727
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Proxima Soft Extra Condensed
+  fontNames:
+  - Proxima Soft Extra Condensed
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

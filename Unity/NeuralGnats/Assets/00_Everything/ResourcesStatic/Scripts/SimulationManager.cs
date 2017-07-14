@@ -5,16 +5,21 @@ using UnityEngine;
 public class SimulationManager : MonoBehaviour {
 
     public int generation = 0;
-    float generationTimeLeft = 0.0f;
+    float generationTimer = 0.0f;
     public List<float> generationFitness = new List<float>();
 
     public GameObject prefabCreature;
     public GameObject prefabFood;
 
+    public TextMesh textGeneration;
+    public TextMesh textGenerationTime;
+
     float foodSpawnRange = 1.75f;
 
     void Start ()
     {
+        Application.runInBackground = true;
+
         StartCoroutine(DoHandleGenerations());
     }
 	
@@ -30,7 +35,6 @@ public class SimulationManager : MonoBehaviour {
 	IEnumerator DoHandleGenerations()
     {
         int numCreaturesPerGen = 24;
-        float generationMaxTime = 50.0f;
         var creatureSpawnRange = 1.0f;
 
         int numNeuralNetsPassed = numCreaturesPerGen / 6;
@@ -39,6 +43,8 @@ public class SimulationManager : MonoBehaviour {
         // go thru all generations
         while (true)
         {
+            textGeneration.text = string.Format("Generation: {0}", generation);
+
             SpawnFoodItem();
 
             List<Creature> creatures = new List<Creature>();
@@ -88,11 +94,14 @@ public class SimulationManager : MonoBehaviour {
             }
 
             // while simulation alive
-            generationTimeLeft = generationMaxTime;
-            //while (numCreaturesAlive > 0 && generationTimeLeft > 0.0f)
+            generationTimer = 0.0f;
+
             while (numCreaturesAlive > 0)
             {
-                generationTimeLeft -= Time.deltaTime;
+                generationTimer += Time.deltaTime;
+
+                textGenerationTime.text = string.Format("Time: {0:0.00}", generationTimer);
+
                 yield return null;
             }
 
@@ -134,11 +143,11 @@ public class SimulationManager : MonoBehaviour {
         myStyle.fontSize = 24;
         myStyle.normal.textColor = Color.white;
 
-        var strGeneration = string.Format("Generation: {0}", generation);
-        GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
+        //var strGeneration = string.Format("Generation: {0}", generation);
+        //GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
 
         // gen time left
-        var strTimeLeft = string.Format("Time: {0}", generationTimeLeft);
-        GUI.Label(new Rect(10, 40, 100, 20), strTimeLeft);
+        //var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
+        //GUI.Label(new Rect(10, 10, 100, 20), strTimeLeft);
     }
 }

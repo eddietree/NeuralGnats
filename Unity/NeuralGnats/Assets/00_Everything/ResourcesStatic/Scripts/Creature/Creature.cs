@@ -16,7 +16,7 @@ public class Creature : MonoBehaviour {
 
     const int numFeelers = 5;
     const float angleSpreadDegrees = 110.0f;
-    const float feelerDist = 3.0f;
+    const float feelerDist = 4.0f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -32,7 +32,9 @@ public class Creature : MonoBehaviour {
     public NeuralNetwork neuralNet;
 
     public float fitness = 0.0f;
+    float lifeSpanEat = 10.0f;
     float lifeSpanMax = 15.0f;
+
     float lifeSpan = 0.0f;
 
     Coroutine threadSteering;
@@ -101,7 +103,7 @@ public class Creature : MonoBehaviour {
             neuralNetInput[i] = 0.0f;
 
         // neural nets
-        int[] layerSizes = new int[] { numInputs, 32, 32, numOutputs };
+        int[] layerSizes = new int[] { numInputs, 10, numOutputs };
         neuralNet = new NeuralNetwork(layerSizes);
     }
 
@@ -213,7 +215,7 @@ public class Creature : MonoBehaviour {
                 eventEatFood(collisionObj.gameObject);
 
             fitness += 0.05f;
-            lifeSpan = lifeSpanMax;
+            lifeSpan = Mathf.Min(lifeSpan+lifeSpanEat, lifeSpanMax);
 
             //collisionObj.gameObject.GetComponent<BoxCollider2D>().enabled = false;
             //GameObject.Destroy(collisionObj.gameObject);
