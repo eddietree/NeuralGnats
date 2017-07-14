@@ -15,7 +15,7 @@ public class Creature : MonoBehaviour {
     bool isDead = false;
 
     const int numFeelers = 5;
-    const float angleSpreadDegrees = 110.0f;
+    const float angleSpreadDegrees = 90.0f;
     const float feelerDist = 2.5f;
 
     public float[] feelerDanger = new float[numFeelers];
@@ -24,8 +24,10 @@ public class Creature : MonoBehaviour {
     public float[] neuralNetInput;
     public float[] neuralNetOutput;
 
-    public delegate void DeathEvent(Creature creature);
+    public delegate void DeathEvent();
+    public delegate void EatFoodEvent(GameObject food);
     public DeathEvent eventDeath;
+    public EatFoodEvent eventEatFood;
 
     public NeuralNetwork neuralNet;
 
@@ -88,7 +90,7 @@ public class Creature : MonoBehaviour {
             neuralNetInput[i] = 0.0f;
 
         // neural nets
-        int[] layerSizes = new int[] { numInputs, 20, 20, numOutputs };
+        int[] layerSizes = new int[] { numInputs, 32, 32, numOutputs };
         neuralNet = new NeuralNetwork(layerSizes);
     }
 
@@ -99,13 +101,13 @@ public class Creature : MonoBehaviour {
 
     void UpdateFeelers()
     {
-        var layerMaskObstacle = LayerMask.GetMask("Obstacle");
+        var layerMaskObstacle = LayerMask.GetMask("Obstacle", "Creature");
         var layerMaskFood = LayerMask.GetMask("Food");
 
         var angleMin = -angleSpreadDegrees;
         var angleDelta = (angleSpreadDegrees * 2.0f) / (numFeelers - 1.0f);
 
-        var rayOrigin = transform.position;
+        var rayOrigin = transform.position + transform.up * 0.1f;
 
         var resultHitFood = Physics2D.CircleCast(rayOrigin, feelerDist, transform.forward, feelerDist, layerMaskFood);
 
@@ -195,12 +197,16 @@ public class Creature : MonoBehaviour {
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
+            if (eventDeath != null)
+                eventDeath();
+
             OnDeath();
         }
 
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Food"))
         {
-            print("EAT FOOD");
+            if (eventEatFood != null)
+                eventEatFood(collision.gameObject);
 
             fitness += 5.0f;
             GameObject.Destroy(collision.gameObject);
@@ -245,13 +251,17 @@ public class Creature : MonoBehaviour {
             if (forceLeft > 0.0f)
             {
                 rb.AddForceAtPosition(left * forceScalar * forceLeft, thrusterLeft.transform.position);
-                thrusterLeft.EmitParticles(1);
+
+                if (Random.Range(0.0f,1.0f) < forceLeft)
+                    thrusterLeft.EmitParticles(1);
             }
 
             if (forceRight > 0.0f)
             {
                 rb.AddForceAtPosition(right * forceScalar * forceRight, thrusterRight.transform.position);
-                thrusterRight.EmitParticles(1);
+
+                if (Random.Range(0.0f, 1.0f) < forceRight)
+                    thrusterRight.EmitParticles(1);
             }
 
             UpdateNeuralNetOutput();

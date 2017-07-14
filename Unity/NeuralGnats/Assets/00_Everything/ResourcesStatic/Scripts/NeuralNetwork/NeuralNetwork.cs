@@ -52,14 +52,18 @@ public class NeuralNetwork
             for(int iNeuron = 0; iNeuron < currNeuronLayer.neurons.Length; ++iNeuron)
             {
                 var otherNeuron = otherNeuronLayer.neurons[iNeuron];
-                var currNeuron = currNeuronLayer.neurons[iNeuron];
-
-                currNeuron.InitWeights(otherNeuron.weights.Length);
-
-                // copy weights
-                for (int iWeight = 0; iWeight < otherNeuron.weights.Length; ++iWeight)
+                
+                // copy other neurons
+                if (otherNeuron.weights != null)
                 {
-                    currNeuron.weights[iWeight] = otherNeuron.weights[iWeight];
+                    var currNeuron = currNeuronLayer.neurons[iNeuron];
+                    currNeuron.InitWeights(otherNeuron.weights.Length);
+
+                    // copy weights
+                    for (int iWeight = 0; iWeight < otherNeuron.weights.Length; ++iWeight)
+                    {
+                        currNeuron.weights[iWeight] = otherNeuron.weights[iWeight];
+                    }
                 }
             }
 
@@ -102,8 +106,6 @@ public class NeuralNetwork
 
     public void Mutate()
     {
-        // TODO!!
-
         for (int iLayer = 0; iLayer < neuronLayers.Length; ++iLayer)
         {
             var currNeuronLayer = neuronLayers[iLayer];
@@ -112,6 +114,9 @@ public class NeuralNetwork
             for (int iNeuron = 0; iNeuron < currNeuronLayer.neurons.Length; ++iNeuron)
             {
                 var currNeuron = currNeuronLayer.neurons[iNeuron];
+
+                if (currNeuron.weights == null)
+                    continue;
 
                 for (int iWeight = 0; iWeight < currNeuron.weights.Length; ++iWeight)
                 {
