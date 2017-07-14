@@ -18,11 +18,22 @@ public class SimulationManager : MonoBehaviour {
     float creatureSpawnRange = 0.0f;
     int numCreaturesPerGen = 64;
 
+    HashSet<GameObject> touchedZones = new HashSet<GameObject>();
+
     void Start ()
     {
         Application.runInBackground = true;
 
         StartCoroutine(DoHandleGenerations());
+
+        foreach(var zone in GameObject.FindObjectsOfType<Zone>())
+        {
+            var zoneCurr = zone;
+            zoneCurr.eventTouched += () =>
+            {
+                zoneCurr.GetComponent<SpriteRenderer>().material.color = Color.Lerp(Color.red, Color.yellow, Mathf.Clamp01((float)zoneCurr.numTouches / 32.0f)) * 0.5f;
+            };
+        }
     }
 	
     GameObject SpawnFoodItem()

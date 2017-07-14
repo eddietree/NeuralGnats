@@ -211,6 +211,11 @@ public class Creature : MonoBehaviour {
             // doesn't touch?
             if (!touchedZones.Contains(collisionGameObj))
             {
+                var zone = collisionGameObj.GetComponent<Zone>();
+
+                if (zone.eventTouched != null)
+                    zone.eventTouched();
+
                 lifeSpan = Mathf.Min(lifeSpan + lifeSpanEat, lifeSpanMax);
 
                 touchedZones.Add(collisionGameObj);

@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Zone : MonoBehaviour {
+public class Zone : MonoBehaviour
+{
+    public delegate void TouchEvent();
+    public TouchEvent eventTouched;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public int numTouches = 0;
+
+    private void Start()
+    {
+        eventTouched += () =>
+        {
+            ++numTouches;
+        };
+    }
 }
