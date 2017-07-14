@@ -35,7 +35,6 @@ public class NeuronLayer
 public class NeuralNetwork
 {
     NeuronLayer[] neuronLayers;
-    //float fitness;
 
     public NeuralNetwork(NeuralNetwork other)
     {
@@ -99,6 +98,11 @@ public class NeuralNetwork
     float sigmoid(float val)
     {
         return 1.0f / (1.0f + Mathf.Exp(-val));
+    }
+
+    public void Mutate()
+    {
+        // TODO!!
     }
 
     public void FeedForward(float[] inputs, float[] outputs)

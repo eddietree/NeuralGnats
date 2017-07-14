@@ -29,6 +29,8 @@ public class Creature : MonoBehaviour {
 
     NeuralNetwork neuralNet;
 
+    public float fitness = 0.0f;
+
     Coroutine threadSteering;
     
     void Start ()
@@ -54,6 +56,8 @@ public class Creature : MonoBehaviour {
 
         threadSteering = StartCoroutine(HandleSteering());
         isDead = false;
+
+        fitness = 0.0f;
     }
 
     void OnDeath()
