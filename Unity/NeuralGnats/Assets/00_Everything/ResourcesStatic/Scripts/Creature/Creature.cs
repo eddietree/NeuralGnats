@@ -10,13 +10,13 @@ public class Creature : MonoBehaviour {
     public Transform thrusterRightMount;
     CreatureThruster thrusterLeft;
     CreatureThruster thrusterRight;
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
 
     bool isDead = false;
 
     const int numFeelers = 5;
-    const float angleSpreadDegrees = 110.0f;
-    const float feelerDist = 4.0f;
+    const float angleSpreadDegrees = 100.0f;
+    const float feelerDist = 3.0f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -42,8 +42,6 @@ public class Creature : MonoBehaviour {
     void Start ()
     {
         InitNeuralNetwork();
-
-        rb = GetComponent<Rigidbody2D>();
 
         thrusterLeft = CreateThruster(thrusterLeftMount);
         thrusterRight = CreateThruster(thrusterRightMount);

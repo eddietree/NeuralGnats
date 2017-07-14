@@ -15,6 +15,8 @@ public class SimulationManager : MonoBehaviour {
     public TextMesh textGenerationTime;
 
     float foodSpawnRange = 1.75f;
+    float creatureSpawnRange = 0.0f;
+    int numCreaturesPerGen = 4;
 
     void Start ()
     {
@@ -34,9 +36,6 @@ public class SimulationManager : MonoBehaviour {
 
 	IEnumerator DoHandleGenerations()
     {
-        int numCreaturesPerGen = 24;
-        var creatureSpawnRange = 1.0f;
-
         int numNeuralNetsPassed = numCreaturesPerGen / 6;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
@@ -45,7 +44,7 @@ public class SimulationManager : MonoBehaviour {
         {
             textGeneration.text = string.Format("Generation: {0}", generation);
 
-            SpawnFoodItem();
+            //SpawnFoodItem();
 
             List<Creature> creatures = new List<Creature>();
 
@@ -56,7 +55,8 @@ public class SimulationManager : MonoBehaviour {
                 var creatureObj = GameObject.Instantiate(prefabCreature);
                 
                 creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
-                creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
+                creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
+                //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
                 var creature = creatureObj.GetComponent<Creature>();
                 creatures.Add(creature);
@@ -81,7 +81,7 @@ public class SimulationManager : MonoBehaviour {
                 };
 
                 // event - creature eats food
-                creatureTemp.eventEatFood += (GameObject foodItem) =>
+                /*creatureTemp.eventEatFood += (GameObject foodItem) =>
                 {
                    foodItem.transform.position = new Vector3(Random.Range(-foodSpawnRange, foodSpawnRange), Random.Range(-foodSpawnRange, foodSpawnRange), 0.0f);
 
@@ -90,7 +90,7 @@ public class SimulationManager : MonoBehaviour {
                     rbFood.angularVelocity = 0.0f; 
 
                     //SpawnFoodItem();
-                };
+                };*/
             }
 
             // while simulation alive
