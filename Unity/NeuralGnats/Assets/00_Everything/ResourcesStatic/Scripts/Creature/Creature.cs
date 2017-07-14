@@ -15,8 +15,8 @@ public class Creature : MonoBehaviour {
     bool isDead = false;
 
     const int numFeelers = 5;
-    const float angleSpreadDegrees = 90.0f;
-    const float feelerDist = 3.5f;
+    const float angleSpreadDegrees = 110.0f;
+    const float feelerDist = 3.0f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -32,6 +32,8 @@ public class Creature : MonoBehaviour {
     public NeuralNetwork neuralNet;
 
     public float fitness = 0.0f;
+    float lifeSpanMax = 15.0f;
+    float lifeSpan = 0.0f;
 
     Coroutine threadSteering;
     
@@ -50,6 +52,10 @@ public class Creature : MonoBehaviour {
 
     private void Reset()
     {
+        isDead = false;
+        lifeSpan = lifeSpanMax;
+        fitness = 0.0f;
+
         if (threadSteering != null)
         {
             StopCoroutine(threadSteering);
@@ -57,13 +63,16 @@ public class Creature : MonoBehaviour {
         }
 
         threadSteering = StartCoroutine(HandleSteering());
-        isDead = false;
-
-        fitness = 0.0f;
     }
 
     void OnDeath()
     {
+        if (eventDeath != null)
+            eventDeath();
+
+        eventDeath = null;
+        eventEatFood = null;
+
         if (threadSteering != null)
         {
             StopCoroutine(threadSteering);
@@ -75,12 +84,14 @@ public class Creature : MonoBehaviour {
 
         isDead = true;
         GetComponent<BoxCollider2D>().enabled = false;
+
+        GetComponent<SpriteRenderer>().color = Color.gray;
     }
 
     void InitNeuralNetwork()
     {
-        // feelers, angle, velocity, angular velocity
-        int numInputs = feelerDanger.Length + feelerHunger.Length + 3;
+        // feelers, velocity, angular velocity
+        int numInputs = feelerDanger.Length + feelerHunger.Length + 2;
         int numOutputs = 2;
 
         neuralNetInput = new float[numInputs];
@@ -94,14 +105,10 @@ public class Creature : MonoBehaviour {
         neuralNet = new NeuralNetwork(layerSizes);
     }
 
-    private void Update()
-    {
-        UpdateFeelers();
-    }
-
     void UpdateFeelers()
     {
-        var layerMaskObstacle = LayerMask.GetMask("Obstacle", "Creature");
+        //var layerMaskObstacle = LayerMask.GetMask("Obstacle", "Creature");
+        var layerMaskObstacle = LayerMask.GetMask("Obstacle");
         var layerMaskFood = LayerMask.GetMask("Food");
 
         var angleMin = -angleSpreadDegrees;
@@ -133,18 +140,16 @@ public class Creature : MonoBehaviour {
 
             var resultHitObstacle = Physics2D.Raycast(rayOrigin, rayDirection, feelerDist, layerMaskObstacle);
 
-            if (resultHitObstacle)
+            if (resultHitObstacle) // contact!
             {
-                // contact!
-                Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * resultHitObstacle.distance, Color.red);
+                var feelDangerVal = Mathf.Clamp01(1.0f - resultHitObstacle.distance / feelerDist);
+                feelerDanger[iFeeler] = feelDangerVal;
 
-                feelerDanger[iFeeler] = 1.0f - resultHitObstacle.distance / feelerDist;
+                Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * resultHitObstacle.distance, Color.Lerp(Color.black, Color.red, feelDangerVal+0.1f));
             }
-            else
+            else // no contact!
             {
-                // no contact!
                 Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * feelerDist, Color.blue);
-
                 feelerDanger[iFeeler] = 0.0f;
             }
 
@@ -155,7 +160,9 @@ public class Creature : MonoBehaviour {
 
                 var angleMax = angleDelta;
                 var angleWeight = 1.0f- Mathf.Clamp01(angleBetween / angleMax);
-                feelerHunger[iFeeler] = Mathf.Clamp01((1.0f- distToFood/feelerDist) * angleWeight);
+                var hungerVal = Mathf.Clamp01((1.0f - distToFood / feelerDist) * angleWeight);
+
+                feelerHunger[iFeeler] = hungerVal;
             }
             else
             {
@@ -176,7 +183,7 @@ public class Creature : MonoBehaviour {
 
         neuralNetInput[numFeelers * 2+0] = rb.velocity.magnitude;
         neuralNetInput[numFeelers * 2+1] = rb.angularVelocity;
-        neuralNetInput[numFeelers * 2+2] = Mathf.Atan2(fwd.y, fwd.x);
+        //neuralNetInput[numFeelers * 2+2] = Mathf.Atan2(fwd.y, fwd.x);
 
         // feed forward
         neuralNet.FeedForward(neuralNetInput, neuralNetOutput);
@@ -193,23 +200,23 @@ public class Creature : MonoBehaviour {
         return thruster;
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D collisionObj)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        if (collisionObj.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
-            if (eventDeath != null)
-                eventDeath();
-
             OnDeath();
         }
 
-        else if (collision.gameObject.layer == LayerMask.NameToLayer("Food"))
+        else if (collisionObj.gameObject.layer == LayerMask.NameToLayer("Food"))
         {
             if (eventEatFood != null)
-                eventEatFood(collision.gameObject);
+                eventEatFood(collisionObj.gameObject);
 
-            fitness += 1.5f;
-            GameObject.Destroy(collision.gameObject);
+            fitness += 0.05f;
+            lifeSpan = lifeSpanMax;
+
+            //collisionObj.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+            //GameObject.Destroy(collisionObj.gameObject);
         }
     }
 
@@ -217,6 +224,7 @@ public class Creature : MonoBehaviour {
     {
         while(true)
         {
+            UpdateFeelers();
             UpdateNeuralNetOutput();
 
             Vector2 fwd = transform.up;
@@ -266,7 +274,13 @@ public class Creature : MonoBehaviour {
 
             UpdateNeuralNetOutput();
 
-            fitness += Time.deltaTime * 0.1f;
+            lifeSpan -= Time.deltaTime;
+            if (lifeSpan < 0.0f)
+            {
+                OnDeath();
+            }
+
+            fitness += Time.deltaTime * 0.05f;
 
             yield return null;
         }
