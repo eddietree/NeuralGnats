@@ -16,7 +16,7 @@ public class Creature : MonoBehaviour {
 
     const int numFeelers = 5;
     const float angleSpreadDegrees = 100.0f;
-    const float feelerDist = 3.0f;
+    const float feelerDist = 5.0f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -32,10 +32,12 @@ public class Creature : MonoBehaviour {
     public NeuralNetwork neuralNet;
 
     public float fitness = 0.0f;
-    float lifeSpanEat = 10.0f;
-    float lifeSpanMax = 15.0f;
+    float lifeSpanEat = 5.0f;
+    float lifeSpanMax = 10.0f;
 
     float lifeSpan = 0.0f;
+
+    HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     Coroutine threadSteering;
     
@@ -200,6 +202,23 @@ public class Creature : MonoBehaviour {
         return thruster;
     }
 
+    void OnTriggerEnter2D(Collider2D collisionObj)
+    {
+        if (collisionObj.gameObject.layer == LayerMask.NameToLayer("Zone"))
+        {
+            var collisionGameObj = collisionObj.gameObject;
+
+            // doesn't touch?
+            if (!touchedZones.Contains(collisionGameObj))
+            {
+                lifeSpan = Mathf.Min(lifeSpan + lifeSpanEat, lifeSpanMax);
+
+                touchedZones.Add(collisionGameObj);
+                fitness += 1.0f;
+            }
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D collisionObj)
     {
         if (collisionObj.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
@@ -280,7 +299,7 @@ public class Creature : MonoBehaviour {
                 OnDeath();
             }
 
-            fitness += Time.deltaTime * 0.05f;
+            //fitness += Time.deltaTime * 0.05f;
 
             yield return null;
         }

@@ -16,7 +16,7 @@ public class SimulationManager : MonoBehaviour {
 
     float foodSpawnRange = 1.75f;
     float creatureSpawnRange = 0.0f;
-    int numCreaturesPerGen = 4;
+    int numCreaturesPerGen = 64;
 
     void Start ()
     {
@@ -36,7 +36,8 @@ public class SimulationManager : MonoBehaviour {
 
 	IEnumerator DoHandleGenerations()
     {
-        int numNeuralNetsPassed = numCreaturesPerGen / 6;
+        //int numNeuralNetsPassed = numCreaturesPerGen / 10;
+        int numNeuralNetsPassed = 3;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
         // go thru all generations
