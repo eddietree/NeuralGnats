@@ -221,6 +221,10 @@ public class Creature : MonoBehaviour {
                 touchedZones.Add(collisionGameObj);
                 fitness += 1.0f;
             }
+            else
+            {
+                int g = 5;
+            }
         }
     }
 
@@ -236,7 +240,7 @@ public class Creature : MonoBehaviour {
             if (eventEatFood != null)
                 eventEatFood(collisionObj.gameObject);
 
-            fitness += 0.05f;
+            //fitness += 0.05f;
             lifeSpan = Mathf.Min(lifeSpan+lifeSpanEat, lifeSpanMax);
 
             //collisionObj.gameObject.GetComponent<BoxCollider2D>().enabled = false;

@@ -128,7 +128,10 @@ public class SimulationManager : MonoBehaviour {
             // save neural nets to pass on
             passedOnNeuralNet.Clear();
             for (int i = 0; i < numNeuralNetsPassed; ++i)
-                passedOnNeuralNet.Add(creatures[i].neuralNet);
+            {
+                var neuralNetNew = new NeuralNetwork(creatures[i].neuralNet);
+                passedOnNeuralNet.Add(neuralNetNew);
+            }
 
             // delete all old creatures
             for (int i = 0; i < creatures.Count; ++i)
