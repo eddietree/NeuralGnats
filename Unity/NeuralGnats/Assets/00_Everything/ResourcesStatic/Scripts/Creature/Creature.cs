@@ -195,8 +195,13 @@ public class Creature : MonoBehaviour {
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
-            print("BOOM!");
             OnDeath();
+        }
+
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Food"))
+        {
+            print("EAT FOOD");
+            //OnDeath();
         }
     }
 
