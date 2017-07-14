@@ -103,6 +103,48 @@ public class NeuralNetwork
     public void Mutate()
     {
         // TODO!!
+
+        for (int iLayer = 0; iLayer < neuronLayers.Length; ++iLayer)
+        {
+            var currNeuronLayer = neuronLayers[iLayer];
+
+            // copy neurons
+            for (int iNeuron = 0; iNeuron < currNeuronLayer.neurons.Length; ++iNeuron)
+            {
+                var currNeuron = currNeuronLayer.neurons[iNeuron];
+
+                for (int iWeight = 0; iWeight < currNeuron.weights.Length; ++iWeight)
+                {
+                    var weight = currNeuron.weights[iWeight];
+                    float randomNumber = UnityEngine.Random.Range(0f, 100f);
+
+                    if (randomNumber <= 2f)
+                    { //if 1
+                      //flip sign of weight
+                        weight *= -1f;
+                    }
+                    else if (randomNumber <= 4f)
+                    { //if 2
+                      //pick random weight between -1 and 1
+                        weight = UnityEngine.Random.Range(-0.5f, 0.5f);
+                    }
+                    else if (randomNumber <= 6f)
+                    { //if 3
+                      //randomly increase by 0% to 100%
+                        float factor = UnityEngine.Random.Range(0f, 1f) + 1f;
+                        weight *= factor;
+                    }
+                    else if (randomNumber <= 8f)
+                    { //if 4
+                      //randomly decrease by 0% to 100%
+                        float factor = UnityEngine.Random.Range(0f, 1f);
+                        weight *= factor;
+                    }
+
+                    currNeuron.weights[iWeight] = weight;
+                }
+            }
+        }
     }
 
     public void FeedForward(float[] inputs, float[] outputs)

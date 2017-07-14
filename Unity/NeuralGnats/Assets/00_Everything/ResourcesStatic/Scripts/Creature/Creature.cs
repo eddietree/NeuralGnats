@@ -27,7 +27,7 @@ public class Creature : MonoBehaviour {
     public delegate void DeathEvent(Creature creature);
     public DeathEvent eventDeath;
 
-    NeuralNetwork neuralNet;
+    public NeuralNetwork neuralNet;
 
     public float fitness = 0.0f;
 
@@ -201,7 +201,9 @@ public class Creature : MonoBehaviour {
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Food"))
         {
             print("EAT FOOD");
-            //OnDeath();
+
+            fitness += 5.0f;
+            GameObject.Destroy(collision.gameObject);
         }
     }
 
@@ -254,6 +256,7 @@ public class Creature : MonoBehaviour {
 
             UpdateNeuralNetOutput();
 
+            fitness += Time.deltaTime * 0.01f;
 
             yield return null;
         }
