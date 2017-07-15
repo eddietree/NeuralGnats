@@ -203,10 +203,13 @@ public class SimulationManager : MonoBehaviour {
         }
     }
 
+    public Font debugFont;
+
     void OnGUI()
     {
         var myStyle = new GUIStyle();
-        myStyle.fontSize = 24;
+        myStyle.font = debugFont;
+        myStyle.fontSize = 32;
         myStyle.normal.textColor = Color.white;
 
         /*if ( GUI.Button(new Rect(10, 10, 100, 20), "Toggle Debug"))
@@ -218,10 +221,17 @@ public class SimulationManager : MonoBehaviour {
         GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
 
         // gen time left
+        myStyle.fontSize = 18;
         var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
-        GUI.Label(new Rect(10, 35, 100, 20), strTimeLeft);
+        GUI.Label(new Rect(10, 40, 100, 20), strTimeLeft, myStyle);
 
         // print previous generations
+        for(int i = 0; i < generationFitness.Count; ++i)
+        {
+            var data = generationFitness[i];
+            var generationStr = string.Format("Gen {0}: {1}", i, data.avgFitness);
+            GUI.Label(new Rect(10, 70 + (generationFitness.Count - i) * 20, 100, 20), generationStr, myStyle);
+        }
 
     }
 }
