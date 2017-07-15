@@ -12,11 +12,11 @@ public class Creature : MonoBehaviour {
     CreatureThruster thrusterRight;
     public Rigidbody2D rb;
 
-    bool isDead = false;
+    public bool isDead = false;
 
-    const int numFeelers = 5;
+    const int numFeelers = 7;
     const float angleSpreadDegrees = 100.0f;
-    const float feelerDist = 5.0f;
+    const float feelerDist = 5.5f;
 
     public float[] feelerDanger = new float[numFeelers];
     public float[] feelerHunger = new float[numFeelers];
@@ -40,6 +40,8 @@ public class Creature : MonoBehaviour {
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     Coroutine threadSteering;
+
+    bool hungerEnabled = false;
 
     private void OnEnable()
     {
@@ -98,7 +100,10 @@ public class Creature : MonoBehaviour {
     void InitNeuralNetwork()
     {
         // feelers, velocity, angular velocity
-        int numInputs = feelerDanger.Length + feelerHunger.Length + 2;
+        int numInputs = feelerDanger.Length + 2;
+        if (hungerEnabled)
+            numInputs += feelerHunger.Length;
+
         int numOutputs = 2;
 
         neuralNetInput = new float[numInputs];
@@ -111,7 +116,7 @@ public class Creature : MonoBehaviour {
             neuralNetOutput[i] = 0.0f;
 
         // neural nets
-        int[] layerSizes = new int[] { numInputs, 10, numOutputs };
+        int[] layerSizes = new int[] { numInputs, 7, numOutputs };
         neuralNet = new NeuralNetwork(layerSizes);
     }
 
@@ -139,7 +144,8 @@ public class Creature : MonoBehaviour {
             dirToFood = collisionPoint - rayOrigin;
             distToFood = dirToFood.magnitude;
 
-            Debug.DrawLine(rayOrigin, collisionPoint, Color.yellow);
+            if ( SimulationManager.showDebugLines)
+                Debug.DrawLine(rayOrigin, collisionPoint, Color.yellow);
         }
 
         for (int iFeeler = 0; iFeeler < numFeelers; ++iFeeler)
@@ -155,11 +161,14 @@ public class Creature : MonoBehaviour {
                 var feelDangerVal = Mathf.Clamp01(1.0f - resultHitObstacle.distance / feelerDist);
                 feelerDanger[iFeeler] = feelDangerVal;
 
-                Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * resultHitObstacle.distance, Color.Lerp(Color.black, Color.red, feelDangerVal+0.1f));
+                if (SimulationManager.showDebugLines)
+                    Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * resultHitObstacle.distance, Color.Lerp(Color.black, Color.red, feelDangerVal+0.1f));
             }
             else // no contact!
             {
-                Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * feelerDist, Color.blue);
+                if (SimulationManager.showDebugLines)
+                    Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * feelerDist, Color.blue);
+
                 feelerDanger[iFeeler] = 0.0f;
             }
 
@@ -183,14 +192,23 @@ public class Creature : MonoBehaviour {
 
     void UpdateNeuralNetOutput()
     {
-        for(int i = 0; i < numFeelers; ++i)
+        int index = 0;
+
+        for(int i = 0; i < feelerDanger.Length; ++i)
         {
-            neuralNetInput[i] = feelerDanger[i];
-            neuralNetInput[i + numFeelers] = feelerHunger[i];
+            neuralNetInput[index++] = feelerDanger[i];
         }
 
-        neuralNetInput[numFeelers * 2+0] = rb.velocity.magnitude;
-        neuralNetInput[numFeelers * 2+1] = rb.angularVelocity;
+        if (hungerEnabled)
+        {
+            for (int i = 0; i < feelerHunger.Length; ++i)
+            {
+                neuralNetInput[index++] = feelerHunger[i];
+            }
+        }
+
+        neuralNetInput[index++] = rb.velocity.magnitude;
+        neuralNetInput[index++] = rb.angularVelocity;
 
         // feed forward
         neuralNet.FeedForward(neuralNetInput, neuralNetOutput);

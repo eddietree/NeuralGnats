@@ -6,7 +6,14 @@ public class SimulationManager : MonoBehaviour {
 
     public int generation = 0;
     float generationTimer = 0.0f;
-    public List<float> generationFitness = new List<float>();
+
+    [System.Serializable]
+    public class GenerationData
+    {
+        public float maxFitness = 0.0f;
+        public float avgFitness = 0.0f;
+    }
+    public List<GenerationData> generationFitness = new List<GenerationData>();
 
     public GameObject prefabCreature;
     public GameObject prefabFood;
@@ -17,6 +24,8 @@ public class SimulationManager : MonoBehaviour {
     float foodSpawnRange = 1.75f;
     float creatureSpawnRange = 0.0f;
     int numCreaturesPerGen = 64;
+
+    public static bool showDebugLines = true;
 
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
@@ -109,11 +118,43 @@ public class SimulationManager : MonoBehaviour {
             // while simulation alive
             generationTimer = 0.0f;
 
+            var camera = Camera.main;
+           
+
             while (numCreaturesAlive > 0)
             {
                 generationTimer += Time.deltaTime;
-
                 textGenerationTime.text = string.Format("Time: {0:0.00}", generationTimer);
+
+                var minX = 9999.0f;
+                var minY = 9999.0f;
+                var maxX = -9999.0f;
+                var maxY = -9999.0f;
+
+                foreach(var creature in creatures)
+                {
+                    if (creature.isDead)
+                        continue;
+
+                    var pos = creature.transform.position;
+
+                    minX = Mathf.Min(pos.x, minX);
+                    minY = Mathf.Min(pos.y, minY);
+                    maxX = Mathf.Max(pos.x, maxX);
+                    maxY = Mathf.Max(pos.y, maxY);
+
+                    var centerX = (minX + maxX) * 0.5f;
+                    var centerY = (minY + maxY) * 0.5f;
+                    var dimenX = maxX - minX;
+                    var dimenY = maxY - minY;
+
+                    var camPos = camera.transform.position;
+                    var camPosNew = new Vector3(centerX, centerY, camPos.z);
+
+                    camera.transform.position = Vector3.Lerp(camPos, camPosNew, 0.001f);
+                    camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, Mathf.Max(dimenX, dimenY) + 4.0f, 0.001f);
+                }
+
 
                 yield return null;
             }
@@ -122,7 +163,16 @@ public class SimulationManager : MonoBehaviour {
             creatures.Sort((x,y) => y.fitness.CompareTo(x.fitness));
 
             // copy highest fitness
-            generationFitness.Add(creatures[0].fitness);
+            var maxFitness = creatures[0].fitness;
+            var avgFitness = 0.0f;
+            foreach (var create in creatures)
+                avgFitness += create.fitness;
+
+            var fitnessData = new GenerationData();
+            fitnessData.maxFitness = maxFitness;
+            fitnessData.avgFitness = (float)avgFitness / (float)creatures.Count;
+
+            generationFitness.Add(fitnessData);
 
             // save neural nets to pass on
             passedOnNeuralNet.Clear();
@@ -158,6 +208,11 @@ public class SimulationManager : MonoBehaviour {
         var myStyle = new GUIStyle();
         myStyle.fontSize = 24;
         myStyle.normal.textColor = Color.white;
+
+        if ( GUI.Button(new Rect(10, 10, 100, 20), "Toggle Debug"))
+        {
+            showDebugLines = !showDebugLines;
+        }
 
         //var strGeneration = string.Format("Generation: {0}", generation);
         //GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
