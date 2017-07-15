@@ -22,8 +22,8 @@ public class SimulationManager : MonoBehaviour {
     public TextMesh textGenerationTime;
 
     float foodSpawnRange = 1.75f;
-    float creatureSpawnRange = 0.0f;
-    int numCreaturesPerGen = 64;
+    float creatureSpawnRange = 0.1f;
+    public int numCreaturesPerGen = 128;
 
     public static bool showDebugLines = true;
 
@@ -56,8 +56,8 @@ public class SimulationManager : MonoBehaviour {
 
 	IEnumerator DoHandleGenerations()
     {
-        //int numNeuralNetsPassed = numCreaturesPerGen / 10;
-        int numNeuralNetsPassed = 3;
+        int numNeuralNetsPassed = numCreaturesPerGen / 10;
+        //int numNeuralNetsPassed = 3;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
         // go thru all generations
@@ -76,7 +76,7 @@ public class SimulationManager : MonoBehaviour {
                 var creatureObj = GameObject.Instantiate(prefabCreature);
                 creatureObj.name = "Creature_" + i;
                 
-                //creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
+                creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
                 creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
                 //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
@@ -222,5 +222,6 @@ public class SimulationManager : MonoBehaviour {
         GUI.Label(new Rect(10, 35, 100, 20), strTimeLeft);
 
         // print previous generations
+
     }
 }

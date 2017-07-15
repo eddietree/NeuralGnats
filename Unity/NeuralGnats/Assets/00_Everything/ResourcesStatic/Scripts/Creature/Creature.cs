@@ -120,7 +120,7 @@ public class Creature : MonoBehaviour {
             neuralNetOutput[i] = 0.0f;
 
         // neural nets
-        int[] layerSizes = new int[] { numInputs, 7, numOutputs };
+        int[] layerSizes = new int[] { numInputs, 9, numOutputs };
         neuralNet = new NeuralNetwork(layerSizes);
     }
 
@@ -288,7 +288,7 @@ public class Creature : MonoBehaviour {
             Vector2 left = fwd;
             Vector2 right = fwd;
 
-            var forceScalar = 0.1f;
+            var forceScalar = 0.15f;
 
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) )
             {
