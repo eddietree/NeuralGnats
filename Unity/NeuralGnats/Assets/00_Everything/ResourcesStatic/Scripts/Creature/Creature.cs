@@ -40,11 +40,16 @@ public class Creature : MonoBehaviour {
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     Coroutine threadSteering;
-    
+
+    private void OnEnable()
+    {
+        Debug.Assert(neuralNet == null);
+
+        InitNeuralNetwork();
+    }
+
     void Start ()
     {
-        InitNeuralNetwork();
-
         thrusterLeft = CreateThruster(thrusterLeftMount);
         thrusterRight = CreateThruster(thrusterRightMount);
         thrusterProto.SetActive(false);
@@ -246,7 +251,7 @@ public class Creature : MonoBehaviour {
 
     IEnumerator HandleSteering()
     {
-        while(true)
+        while (true)
         {
             UpdateFeelers();
             UpdateNeuralNetOutput();

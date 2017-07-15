@@ -48,7 +48,7 @@ public class SimulationManager : MonoBehaviour {
 	IEnumerator DoHandleGenerations()
     {
         //int numNeuralNetsPassed = numCreaturesPerGen / 10;
-        int numNeuralNetsPassed = 1;
+        int numNeuralNetsPassed = 3;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
         // go thru all generations
@@ -60,16 +60,12 @@ public class SimulationManager : MonoBehaviour {
 
             List<Creature> creatures = new List<Creature>();
 
-            print("Create creatures..");
-
-
             // create creatures
             int numCreaturesAlive = numCreaturesPerGen;
             for (int i = 0; i < numCreaturesPerGen; ++i)
             {
-                UnityEngine.Random.InitState(505);
-
                 var creatureObj = GameObject.Instantiate(prefabCreature);
+                creatureObj.name = "Creature_" + i;
                 
                 //creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
                 creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
@@ -84,9 +80,7 @@ public class SimulationManager : MonoBehaviour {
                     var sourceNeuralNet = passedOnNeuralNet[i % passedOnNeuralNet.Count];
 
                     creature.neuralNet = new NeuralNetwork(sourceNeuralNet);
-
-                    print(creature.neuralNet.neuronLayers[1].neurons[0].weights[0]);
-                    //creature.neuralNet.Mutate();
+                    creature.neuralNet.Mutate();
                 }
 
                 // event - creature died :(
@@ -137,14 +131,6 @@ public class SimulationManager : MonoBehaviour {
                 var neuralNetNew = new NeuralNetwork(creatures[i].neuralNet);
                 passedOnNeuralNet.Add(neuralNetNew);
             }
-
-            print("TOP CREATURE NEURAL NET:");
-            print(creatures[0].fitness);
-            print(creatures[0].neuralNet.neuronLayers[1].neurons[0].weights[0]);
-
-            print("SAVE NEURAL NET:");
-            print(passedOnNeuralNet[0].neuronLayers[1].neurons[0].weights[0]);
-
 
             // delete all old creatures
             for (int i = 0; i < creatures.Count; ++i)
