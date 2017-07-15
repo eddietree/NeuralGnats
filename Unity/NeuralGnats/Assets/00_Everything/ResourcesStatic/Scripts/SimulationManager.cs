@@ -56,8 +56,8 @@ public class SimulationManager : MonoBehaviour {
 
 	IEnumerator DoHandleGenerations()
     {
-        int numNeuralNetsPassed = numCreaturesPerGen / 10;
-        //int numNeuralNetsPassed = 3;
+        //int numNeuralNetsPassed = numCreaturesPerGen / 10;
+        int numNeuralNetsPassed = 4;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
         // go thru all generations
@@ -226,11 +226,13 @@ public class SimulationManager : MonoBehaviour {
         GUI.Label(new Rect(10, 40, 100, 20), strTimeLeft, myStyle);
 
         // print previous generations
-        for(int i = 0; i < generationFitness.Count; ++i)
+        for(int i = 0; i < Mathf.Min(15, generationFitness.Count); ++i)
         {
-            var data = generationFitness[i];
-            var generationStr = string.Format("Gen {0}: {1}", i, data.avgFitness);
-            GUI.Label(new Rect(10, 70 + (generationFitness.Count - i) * 20, 100, 20), generationStr, myStyle);
+            var genIndex = generationFitness.Count - 1 - i;
+
+            var data = generationFitness[genIndex];
+            var generationStr = string.Format("Gen {0}: {1:0.00}", genIndex, data.avgFitness);
+            GUI.Label(new Rect(10, 70 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
         }
 
     }

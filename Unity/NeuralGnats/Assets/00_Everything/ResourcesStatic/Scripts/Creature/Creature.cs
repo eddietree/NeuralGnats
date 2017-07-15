@@ -15,11 +15,11 @@ public class Creature : MonoBehaviour {
     public bool isDead = false;
 
     const int numFeelers = 7;
-    const float angleSpreadDegrees = 100.0f;
+    const float angleSpreadDegrees = 90.0f;
     const float feelerDist = 5.5f;
 
-    public float[] feelerDanger = new float[numFeelers];
-    public float[] feelerHunger = new float[numFeelers];
+    float[] feelerDanger = new float[numFeelers];
+    float[] feelerHunger = new float[numFeelers];
 
     public float[] neuralNetInput;
     public float[] neuralNetOutput;
@@ -120,7 +120,7 @@ public class Creature : MonoBehaviour {
             neuralNetOutput[i] = 0.0f;
 
         // neural nets
-        int[] layerSizes = new int[] { numInputs, 9, numOutputs };
+        int[] layerSizes = new int[] { numInputs, 7, numOutputs };
         neuralNet = new NeuralNetwork(layerSizes);
     }
 
