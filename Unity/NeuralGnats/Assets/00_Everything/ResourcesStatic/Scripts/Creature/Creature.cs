@@ -91,6 +91,10 @@ public class Creature : MonoBehaviour {
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0.0f;
 
+
+        thrusterLeft.gameObject.SetActive(false);
+        thrusterRight.gameObject.SetActive(false);
+
         isDead = true;
         GetComponent<BoxCollider2D>().enabled = false;
 
@@ -162,7 +166,13 @@ public class Creature : MonoBehaviour {
                 feelerDanger[iFeeler] = feelDangerVal;
 
                 if (SimulationManager.showDebugLines)
-                    Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * resultHitObstacle.distance, Color.Lerp(Color.black, Color.red, feelDangerVal+0.1f));
+                {
+                    var lineColor = Color.Lerp(Color.black, Color.red, feelDangerVal + 0.1f);
+
+                    lineColor.a = feelDangerVal;
+
+                    Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * resultHitObstacle.distance, lineColor);
+                }
             }
             else // no contact!
             {

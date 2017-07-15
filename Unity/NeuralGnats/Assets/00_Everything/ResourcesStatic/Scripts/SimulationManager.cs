@@ -209,16 +209,18 @@ public class SimulationManager : MonoBehaviour {
         myStyle.fontSize = 24;
         myStyle.normal.textColor = Color.white;
 
-        if ( GUI.Button(new Rect(10, 10, 100, 20), "Toggle Debug"))
+        /*if ( GUI.Button(new Rect(10, 10, 100, 20), "Toggle Debug"))
         {
             showDebugLines = !showDebugLines;
-        }
+        }*/
 
-        //var strGeneration = string.Format("Generation: {0}", generation);
-        //GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
+        var strGeneration = string.Format("Generation: {0}", generation);
+        GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
 
         // gen time left
-        //var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
-        //GUI.Label(new Rect(10, 10, 100, 20), strTimeLeft);
+        var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
+        GUI.Label(new Rect(10, 35, 100, 20), strTimeLeft);
+
+        // print previous generations
     }
 }
