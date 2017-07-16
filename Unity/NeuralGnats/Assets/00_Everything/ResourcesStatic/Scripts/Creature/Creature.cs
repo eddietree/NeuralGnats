@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Creature : MonoBehaviour {
-
+public class Creature : CreatureBase
+{
     public GameObject thrusterProto;
 
     public Transform thrusterLeftMount;
@@ -12,8 +12,6 @@ public class Creature : MonoBehaviour {
     CreatureThruster thrusterRight;
     public Rigidbody2D rb;
 
-    public bool isDead = false;
-
     const int numFeelers = 7;
     const float angleSpreadDegrees = 90.0f;
     const float feelerDist = 5.5f;
@@ -21,34 +19,19 @@ public class Creature : MonoBehaviour {
     float[] feelerDanger = new float[numFeelers];
     float[] feelerHunger = new float[numFeelers];
 
-    public float[] neuralNetInput;
-    public float[] neuralNetOutput;
-
     public delegate void DeathEvent();
     public delegate void EatFoodEvent(GameObject food);
     public DeathEvent eventDeath;
     public EatFoodEvent eventEatFood;
 
-    public NeuralNetwork neuralNet;
-
-    public float fitness = 0.0f;
     float lifeSpanEat = 5.0f;
     float lifeSpanMax = 10.0f;
-
-    float lifeSpan = 0.0f;
 
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     Coroutine threadSteering;
 
     bool hungerEnabled = false;
-
-    private void OnEnable()
-    {
-        Debug.Assert(neuralNet == null);
-
-        InitNeuralNetwork();
-    }
 
     void Start ()
     {
@@ -91,7 +74,6 @@ public class Creature : MonoBehaviour {
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0.0f;
 
-
         thrusterLeft.gameObject.SetActive(false);
         thrusterRight.gameObject.SetActive(false);
 
@@ -101,7 +83,7 @@ public class Creature : MonoBehaviour {
         GetComponent<SpriteRenderer>().color = Color.gray;
     }
 
-    void InitNeuralNetwork()
+    public override void InitNeuralNetwork()
     {
         // feelers, velocity, angular velocity
         int numInputs = feelerDanger.Length + 2;

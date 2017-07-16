@@ -81,6 +81,7 @@ public class SimulationManager : MonoBehaviour {
                 //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
                 var creature = creatureObj.GetComponent<Creature>();
+                creature.InitNeuralNetwork();
                 creatures.Add(creature);
 
                 // grab another neural net from previous generation
@@ -88,7 +89,7 @@ public class SimulationManager : MonoBehaviour {
                 {
                     var sourceNeuralNet = passedOnNeuralNet[i % passedOnNeuralNet.Count];
 
-                    creature.neuralNet = new NeuralNetwork(sourceNeuralNet);
+                    creature.CopyNeuralNetwork(sourceNeuralNet);
                     creature.neuralNet.Mutate();
                 }
 
