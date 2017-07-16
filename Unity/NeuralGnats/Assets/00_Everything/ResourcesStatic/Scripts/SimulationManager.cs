@@ -196,11 +196,6 @@ public class SimulationManager : MonoBehaviour {
         myStyle.fontSize = 32;
         myStyle.normal.textColor = Color.white;
 
-        /*if ( GUI.Button(new Rect(10, 10, 100, 20), "Toggle Debug"))
-        {
-            showDebugLines = !showDebugLines;
-        }*/
-
         var strGeneration = string.Format("Generation: {0}", generation);
         GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
 
