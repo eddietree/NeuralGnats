@@ -32,10 +32,14 @@ public class SimulationManager : MonoBehaviour {
     void Start ()
     {
         Application.runInBackground = true;
-
         StartCoroutine(DoHandleGenerations());
 
-        foreach(var zone in GameObject.FindObjectsOfType<Zone>())
+        InitZones();
+    }
+
+    void InitZones()
+    {
+        foreach (var zone in GameObject.FindObjectsOfType<Zone>())
         {
             var zoneCurr = zone;
             zoneCurr.eventTouched += () =>
