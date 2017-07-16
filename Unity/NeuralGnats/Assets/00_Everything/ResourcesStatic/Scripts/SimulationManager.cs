@@ -67,7 +67,7 @@ public class SimulationManager : MonoBehaviour {
 
             //SpawnFoodItem();
 
-            List<Creature> creatures = new List<Creature>();
+            List<CreatureBase> creatures = new List<CreatureBase>();
 
             // create creatures
             int numCreaturesAlive = numCreaturesPerGen;
@@ -80,7 +80,7 @@ public class SimulationManager : MonoBehaviour {
                 creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
                 //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
-                var creature = creatureObj.GetComponent<Creature>();
+                var creature = creatureObj.GetComponent<CreatureBase>();
                 creature.CreateNeuralNetwork();
                 creatures.Add(creature);
 
