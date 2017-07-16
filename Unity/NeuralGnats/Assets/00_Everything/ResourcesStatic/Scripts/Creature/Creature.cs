@@ -12,16 +12,15 @@ public class Creature : CreatureBase
     CreatureThruster thrusterRight;
     public Rigidbody2D rb;
 
+    [ReadOnly]
     const int numFeelers = 7;
     const float angleSpreadDegrees = 90.0f;
     const float feelerDist = 5.5f;
 
     float[] feelerDanger = new float[numFeelers];
     float[] feelerHunger = new float[numFeelers];
-
-    public delegate void DeathEvent();
+    
     public delegate void EatFoodEvent(GameObject food);
-    public DeathEvent eventDeath;
     public EatFoodEvent eventEatFood;
 
     float lifeSpanEat = 5.0f;
@@ -39,51 +38,30 @@ public class Creature : CreatureBase
         thrusterRight = CreateThruster(thrusterRightMount);
         thrusterProto.SetActive(false);
 
-        Reset();
-	}
-
-    private void Reset()
-    {
-        isDead = false;
         lifeSpan = lifeSpanMax;
-        fitness = 0.0f;
 
-        if (threadSteering != null)
+        // add death state
+        eventDeath += () =>
         {
-            StopCoroutine(threadSteering);
-            threadSteering = null;
-        }
+            eventEatFood = null;
 
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0.0f;
+
+            thrusterLeft.gameObject.SetActive(false);
+            thrusterRight.gameObject.SetActive(false);
+
+            GetComponent<BoxCollider2D>().enabled = false;
+            GetComponent<SpriteRenderer>().color = Color.gray;
+
+            this.StopAndNullify(ref threadSteering);
+        };
+
+        this.StopAndNullify(ref threadSteering);
         threadSteering = StartCoroutine(HandleSteering());
     }
 
-    void OnDeath()
-    {
-        if (eventDeath != null)
-            eventDeath();
-
-        eventDeath = null;
-        eventEatFood = null;
-
-        if (threadSteering != null)
-        {
-            StopCoroutine(threadSteering);
-            threadSteering = null;
-        }
-
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0.0f;
-
-        thrusterLeft.gameObject.SetActive(false);
-        thrusterRight.gameObject.SetActive(false);
-
-        isDead = true;
-        GetComponent<BoxCollider2D>().enabled = false;
-
-        GetComponent<SpriteRenderer>().color = Color.gray;
-    }
-
-    public override void InitNeuralNetwork()
+    public override void CreateNeuralNetwork()
     {
         // feelers, velocity, angular velocity
         int numInputs = feelerDanger.Length + 2;
@@ -92,14 +70,8 @@ public class Creature : CreatureBase
 
         int numOutputs = 2;
 
-        neuralNetInput = new float[numInputs];
-
-        for (int i = 0; i < neuralNetInput.Length; ++i)
-            neuralNetInput[i] = 0.0f;
-
-        // neural nets
         int[] layerSizes = new int[] { numInputs, 7, numOutputs };
-        neuralNet = new NeuralNetwork(layerSizes);
+        InitNeuralNetworkHelper(layerSizes);
     }
 
     void UpdateFeelers()
@@ -239,7 +211,7 @@ public class Creature : CreatureBase
     {
         if (collisionObj.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
-            OnDeath();
+            TriggerDeath();
         }
 
         else if (collisionObj.gameObject.layer == LayerMask.NameToLayer("Food"))
@@ -310,7 +282,7 @@ public class Creature : CreatureBase
             lifeSpan -= Time.deltaTime;
             if (lifeSpan < 0.0f)
             {
-                OnDeath();
+                TriggerDeath();
             }
 
             //fitness += Time.deltaTime * 0.05f;

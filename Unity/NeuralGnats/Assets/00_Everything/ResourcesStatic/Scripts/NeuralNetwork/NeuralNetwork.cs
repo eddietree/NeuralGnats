@@ -12,8 +12,6 @@ public class Neuron
 
     public void InitWeights(int numWeights)
     {
-        //UnityEngine.Random.InitState(505);
-
         // init weights
         weights = new float[numWeights];
         for (int i = 0; i < weights.Length; ++i)

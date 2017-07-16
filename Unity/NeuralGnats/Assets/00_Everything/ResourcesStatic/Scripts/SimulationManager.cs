@@ -74,14 +74,14 @@ public class SimulationManager : MonoBehaviour {
             for (int i = 0; i < numCreaturesPerGen; ++i)
             {
                 var creatureObj = GameObject.Instantiate(prefabCreature);
-                creatureObj.name = "Creature_" + i;
+                creatureObj.name = string.Format("Creature_{0}_{1}", generation, i);
                 
                 creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
                 creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
                 //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
                 var creature = creatureObj.GetComponent<Creature>();
-                creature.InitNeuralNetwork();
+                creature.CreateNeuralNetwork();
                 creatures.Add(creature);
 
                 // grab another neural net from previous generation
