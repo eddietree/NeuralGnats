@@ -30,7 +30,7 @@ public class Creature : CreatureBase
 
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
-    Coroutine threadSteering;
+    Coroutine threadMoving;
 
     bool hungerEnabled = false;
 
@@ -56,11 +56,11 @@ public class Creature : CreatureBase
             GetComponent<BoxCollider2D>().enabled = false;
             GetComponent<SpriteRenderer>().color = Color.gray;
 
-            this.StopAndNullify(ref threadSteering);
+            this.StopAndNullify(ref threadMoving);
         };
 
-        this.StopAndNullify(ref threadSteering);
-        threadSteering = StartCoroutine(HandleSteering());
+        this.StopAndNullify(ref threadMoving);
+        threadMoving = StartCoroutine(HandleMovement());
     }
 
     public override void CreateNeuralNetwork()
@@ -229,7 +229,7 @@ public class Creature : CreatureBase
         }
     }
 
-    IEnumerator HandleSteering()
+    IEnumerator HandleMovement()
     {
         while (true)
         {
