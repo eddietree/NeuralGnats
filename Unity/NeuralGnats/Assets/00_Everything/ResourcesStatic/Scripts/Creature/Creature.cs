@@ -59,7 +59,6 @@ public class Creature : CreatureBase
             this.StopAndNullify(ref threadMoving);
         };
 
-        this.StopAndNullify(ref threadMoving);
         threadMoving = StartCoroutine(HandleMovement());
     }
 
