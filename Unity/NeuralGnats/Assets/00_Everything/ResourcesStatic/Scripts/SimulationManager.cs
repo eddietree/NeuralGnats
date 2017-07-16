@@ -25,8 +25,6 @@ public class SimulationManager : MonoBehaviour {
     float creatureSpawnRange = 0.1f;
     public int numCreaturesPerGen = 128;
 
-    public static bool showDebugLines = true;
-
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     void Start ()

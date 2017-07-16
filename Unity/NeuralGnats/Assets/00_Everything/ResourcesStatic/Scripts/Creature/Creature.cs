@@ -26,6 +26,8 @@ public class Creature : CreatureBase
     float lifeSpanEat = 5.0f;
     float lifeSpanMax = 10.0f;
 
+    public static bool showDebugLines = true;
+
     HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     Coroutine threadSteering;
@@ -98,7 +100,7 @@ public class Creature : CreatureBase
             dirToFood = collisionPoint - rayOrigin;
             distToFood = dirToFood.magnitude;
 
-            if ( SimulationManager.showDebugLines)
+            if (Creature.showDebugLines)
                 Debug.DrawLine(rayOrigin, collisionPoint, Color.yellow);
         }
 
@@ -115,7 +117,7 @@ public class Creature : CreatureBase
                 var feelDangerVal = Mathf.Clamp01(1.0f - resultHitObstacle.distance / feelerDist);
                 feelerDanger[iFeeler] = feelDangerVal;
 
-                if (SimulationManager.showDebugLines)
+                if (Creature.showDebugLines)
                 {
                     var lineColor = Color.Lerp(Color.black, Color.red, feelDangerVal + 0.1f);
 
@@ -126,7 +128,7 @@ public class Creature : CreatureBase
             }
             else // no contact!
             {
-                if (SimulationManager.showDebugLines)
+                if (Creature.showDebugLines)
                     Debug.DrawLine(rayOrigin, rayOrigin + rayDirection * feelerDist, Color.blue);
 
                 feelerDanger[iFeeler] = 0.0f;
