@@ -8,7 +8,6 @@ public class CreatureBase : MonoBehaviour
 
     public NeuralNetwork neuralNet;
     public float[] neuralNetInput;
-    public float[] neuralNetOutput;
 
     public float fitness = 0.0f;
     protected float lifeSpan = 0.0f;

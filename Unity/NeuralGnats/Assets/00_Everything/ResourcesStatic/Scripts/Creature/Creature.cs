@@ -93,13 +93,9 @@ public class Creature : CreatureBase
         int numOutputs = 2;
 
         neuralNetInput = new float[numInputs];
-        neuralNetOutput = new float[numOutputs];
 
         for (int i = 0; i < neuralNetInput.Length; ++i)
             neuralNetInput[i] = 0.0f;
-
-        for (int i = 0; i < neuralNetOutput.Length; ++i)
-            neuralNetOutput[i] = 0.0f;
 
         // neural nets
         int[] layerSizes = new int[] { numInputs, 7, numOutputs };
@@ -203,7 +199,7 @@ public class Creature : CreatureBase
         neuralNetInput[index++] = rb.angularVelocity;
 
         // feed forward
-        neuralNet.FeedForward(neuralNetInput, neuralNetOutput);
+        neuralNet.FeedForward(neuralNetInput);
     }
 
     CreatureThruster CreateThruster(Transform parent)
@@ -292,8 +288,8 @@ public class Creature : CreatureBase
                 rb.angularVelocity = 0.0f;
             }
 
-            var forceLeft = neuralNetOutput[0];
-            var forceRight = neuralNetOutput[1];
+            var forceLeft = neuralNet.GetOutputData(0);
+            var forceRight = neuralNet.GetOutputData(1);
 
             if (forceLeft > 0.0f)
             {

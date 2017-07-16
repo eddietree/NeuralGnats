@@ -157,13 +157,16 @@ public class NeuralNetwork
         }
     }
 
-    public void FeedForward(float[] inputs, float[] outputs)
+    public float GetOutputData(int outputIndex)
+    {
+        var currLayer = neuronLayers[neuronLayers.Length - 1];
+        return currLayer.neurons[outputIndex].val;
+    }
+
+    public void FeedForward(float[] inputs)
     {
         // assert input is same 
         Debug.Assert(inputs.Length == neuronLayers[0].neurons.Length);
-
-        // assert output is same 
-        Debug.Assert(outputs.Length == neuronLayers[neuronLayers.Length - 1].neurons.Length);
 
         // input to first neuron layer
         var firstNeuronLayer = neuronLayers[0];
@@ -194,12 +197,6 @@ public class NeuralNetwork
 
                 neuron.val = sigmoid(result);
             }
-        }
-
-        var lastNeuronLayer = neuronLayers[neuronLayers.Length-1];
-        for (int i = 0; i < outputs.Length; ++i)
-        {
-            outputs[i] = lastNeuronLayer.neurons[i].val;
         }
     }
 }
