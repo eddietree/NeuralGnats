@@ -97,29 +97,13 @@ public class SimulationManager : MonoBehaviour {
                 creatureTemp.eventDeath += () => 
                 {
                     --numCreaturesAlive;
-
-                    creatureTemp.eventEatFood = null;
-                    creatureTemp.eventDeath = null;
                 };
-
-                // event - creature eats food
-                /*creatureTemp.eventEatFood += (GameObject foodItem) =>
-                {
-                   foodItem.transform.position = new Vector3(Random.Range(-foodSpawnRange, foodSpawnRange), Random.Range(-foodSpawnRange, foodSpawnRange), 0.0f);
-
-                    var rbFood = foodItem.GetComponent<Rigidbody2D>();
-                    rbFood.velocity = Vector3.zero;
-                    rbFood.angularVelocity = 0.0f; 
-
-                    //SpawnFoodItem();
-                };*/
             }
 
             // while simulation alive
             generationTimer = 0.0f;
 
             var camera = Camera.main;
-           
 
             while (numCreaturesAlive > 0)
             {
@@ -155,7 +139,6 @@ public class SimulationManager : MonoBehaviour {
                     camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, Mathf.Max(dimenX, dimenY) + 4.0f, 0.001f);
                 }
 
-
                 yield return null;
             }
 
@@ -168,6 +151,7 @@ public class SimulationManager : MonoBehaviour {
             foreach (var create in creatures)
                 avgFitness += create.fitness;
 
+            // set fitness data
             var fitnessData = new GenerationData();
             fitnessData.maxFitness = maxFitness;
             fitnessData.avgFitness = (float)avgFitness / (float)creatures.Count;
@@ -185,9 +169,6 @@ public class SimulationManager : MonoBehaviour {
             // delete all old creatures
             for (int i = 0; i < creatures.Count; ++i)
             {
-                creatures[i].eventDeath = null;
-                creatures[i].eventEatFood = null;
-
                 GameObject.Destroy(creatures[i].gameObject);
             }
 
