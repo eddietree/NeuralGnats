@@ -91,4 +91,12 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
         int index = gridPos.z * numGridsX + gridPos.x;
         return world[index];
     }
+
+    public bool IsValidGridPos(GridPos gridPos)
+    {
+        return gridPos.x >= 0 
+            && gridPos.x < numGridsX
+            && gridPos.z >= 0
+            && gridPos.z < numGridsZ;
+    }
 }

@@ -98,6 +98,11 @@ public class CreatureFrog : CreatureBase
                 else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
                     ++gridDelta.z;
 
+                if (Random.Range(0,2) == 0)
+                    gridDelta.x = Random.Range(0, 3) - 1;
+                else
+                    gridDelta.z = Random.Range(0, 3) - 1;
+
                 // TODO: neural network input
                 //neuralNet.GetOutputData(0);
 
@@ -115,7 +120,6 @@ public class CreatureFrog : CreatureBase
 
             // turn
             var turnAngle = Mathf.Rad2Deg * Mathf.Atan2(-gridDelta.z, gridDelta.x) + 90f;
-
             transform.DORotate(new Vector3(0.0f, turnAngle, 0.0f), 0.1f).SetEase(Ease.OutBack);
 
             // hits wall
