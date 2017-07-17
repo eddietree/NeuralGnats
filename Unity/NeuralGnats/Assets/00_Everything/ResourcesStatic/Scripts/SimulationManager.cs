@@ -98,6 +98,8 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
             if (simulation)
                 simulation.OnStopSimulation();
 
+            yield return new WaitForSeconds(0.3f);
+
             // sort creatures by fitness (descending)
             creatures.Sort((x,y) => y.fitness.CompareTo(x.fitness));
 
@@ -124,14 +126,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
 
             // delete all old creatures
             for (int i = 0; i < creatures.Count; ++i)
-            {
                 GameObject.Destroy(creatures[i].gameObject);
-            }
-
-            // destroy all food items
-            var foods = GameObject.FindObjectsOfType<Food>();
-            for (int i = foods.Length - 1; i >= 0; --i)
-                GameObject.Destroy(foods[i].gameObject);
 
             // next generation
             ++generation;
@@ -149,22 +144,23 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
         myStyle.fontSize = 48;
         myStyle.normal.textColor = Color.white;
 
-        var strGeneration = string.Format("Generation: {0}", generation);
+        var strGeneration = string.Format("Generation {0}", generation);
         GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
 
         // gen time left
-        myStyle.fontSize = 18;
+        myStyle.fontSize = 24;
         var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
-        GUI.Label(new Rect(10, 60, 100, 20), strTimeLeft, myStyle);
+        GUI.Label(new Rect(10, 55, 100, 20), strTimeLeft, myStyle);
 
         // print previous generations
-        for(int i = 0; i < Mathf.Min(15, generationFitness.Count); ++i)
+        myStyle.fontSize = 18;
+        for (int i = 0; i < Mathf.Min(15, generationFitness.Count); ++i)
         {
             var genIndex = generationFitness.Count - 1 - i;
 
             var data = generationFitness[genIndex];
             var generationStr = string.Format("Gen {0}: {1:0.00}", genIndex, data.avgFitness);
-            GUI.Label(new Rect(10, 80 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
+            GUI.Label(new Rect(10, 100 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
         }
     }
 }

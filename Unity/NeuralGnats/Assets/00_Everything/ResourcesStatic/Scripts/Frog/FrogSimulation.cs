@@ -49,7 +49,7 @@ public class FrogSimulation : SimulationBase
             var camPos = camera.transform.position;
             var camPosNew = focusPos + camDelta;
 
-            camera.transform.position = Vector3.Lerp(camPos, camPosNew, 0.001f);
+            camera.transform.position = Vector3.Lerp(camPos, camPosNew, 0.002f);
             //camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, Mathf.Max(dimenX, dimenY) + 4.0f, 0.001f);
         }
     }

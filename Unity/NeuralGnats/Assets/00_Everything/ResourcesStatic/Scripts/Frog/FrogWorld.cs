@@ -80,12 +80,25 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
         // markers
         for (int z = 5; z < numGridsZ; z+=5)
         {
-            var gridPos = new GridPos(-2, z);
-            var textPos = GridToWorldPos(gridPos);
+            // left side
+            var gridPos0 = new GridPos(-2, z);
+            var textPos0 = GridToWorldPos(gridPos0);
+            textPos0.y -= gridSize * 0.5f;
 
-            var textObj = GameObject.Instantiate(textMeshMarker.gameObject);
-            textObj.transform.position = textPos;
-            textObj.GetComponent<TextMesh>().text = string.Format("{0} -", z);
+            var textObj0 = GameObject.Instantiate(textMeshMarker.gameObject);
+            textObj0.transform.position = textPos0;
+            textObj0.GetComponent<TextMesh>().text = string.Format("{0} -", z);
+
+            // right side
+            var gridPos1 = new GridPos(numGridsX, z);
+            var textPos1 = GridToWorldPos(gridPos1);
+            textPos1.y -= gridSize * 0.5f;
+
+            var textObj1 = GameObject.Instantiate(textMeshMarker.gameObject);
+            textObj1.transform.position = textPos1;
+            textObj1.GetComponent<TextMesh>().text = string.Format("- {0}", z);
+            textObj1.GetComponent<TextMesh>().anchor = TextAnchor.MiddleLeft;
+            textObj1.GetComponent<TextMesh>().alignment = TextAlignment.Left;
         }
         textMeshMarker.gameObject.SetActive(false);
     }
