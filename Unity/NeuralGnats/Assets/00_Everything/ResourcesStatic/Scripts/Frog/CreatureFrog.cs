@@ -61,7 +61,7 @@ public class CreatureFrog : CreatureBase
         // the number of buttons
         int numOutputs = 4;
 
-        int[] layerSizes = new int[] { numInputs, 7, numOutputs };
+        int[] layerSizes = new int[] { numInputs, 10, numOutputs };
         InitNeuralNetworkHelper(layerSizes);
     }
 
