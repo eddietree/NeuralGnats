@@ -12,7 +12,7 @@ public class CreatureFrog : CreatureBase
     [ReadOnly]
     public GridPos gridPos = new GridPos(0, 0);
 
-    int scanRangeForward = 5; // +z
+    int scanRangeForward = 7; // +z
     int scanRangeBackwards = 3; // -z
     int scanRangeSide = 3; // +/- x
 

@@ -11,7 +11,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
 {
     public static float gridSize = 0.5f;
     public const int numGridsX = 20;
-    public const int numGridsZ = 200;
+    public const int numGridsZ = 250;
 
     List<GridData> world = new List<GridData>();
 
@@ -45,7 +45,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
 
     void CreateObstacles()
     {
-        var perlinScale = 25.0f / Mathf.Max(numGridsX, numGridsZ);
+        var perlinScale = 50.0f / Mathf.Max(numGridsX, numGridsZ);
         var perlinThreshold = 0.35f;
 
         float aspect = (float)numGridsZ / (float)numGridsX;
