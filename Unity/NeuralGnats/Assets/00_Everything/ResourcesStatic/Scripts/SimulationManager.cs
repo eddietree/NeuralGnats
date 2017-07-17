@@ -19,9 +19,6 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
     public SimulationBase simulation;
     public GameObject prefabCreature;
 
-    public TextMesh textGeneration;
-    public TextMesh textGenerationTime;
-    
     public int numCreaturesPerGen = 128;
 
     void Start ()
@@ -39,8 +36,6 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
         // go thru all generations
         while (true)
         {
-            textGeneration.text = string.Format("Generation: {0}", generation);
-
             creatures.Clear();
 
             // create creatures
@@ -83,8 +78,6 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
             while (numCreaturesAlive > 0)
             {
                 generationTimer += Time.deltaTime;
-                textGenerationTime.text = string.Format("Time: {0:0.00}", generationTimer);
-
                 simulation.OnUpdateSimulation();
 
                 yield return null;
