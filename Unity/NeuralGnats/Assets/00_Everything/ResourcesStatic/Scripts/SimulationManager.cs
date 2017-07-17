@@ -60,7 +60,8 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
                 creatures.Add(creature);
 
                 // simluation
-                simulation.OnCreatureCreated(creature);
+                if (simulation)
+                    simulation.OnCreatureCreated(creature);
 
                 // grab another neural net from previous generation
                 if (passedOnNeuralNet.Count > 0)
@@ -79,20 +80,23 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
                 };
             }
 
+            if (simulation)
+                simulation.OnStartSimulation();
+
             // while simulation alive
             generationTimer = 0.0f;
-
-            simulation.OnStartSimulation();
-
             while (numCreaturesAlive > 0)
             {
                 generationTimer += Time.deltaTime;
-                simulation.OnUpdateSimulation();
+
+                if (simulation)
+                    simulation.OnUpdateSimulation();
 
                 yield return null;
             }
 
-            simulation.OnStopSimulation();
+            if (simulation)
+                simulation.OnStopSimulation();
 
             // sort creatures by fitness (descending)
             creatures.Sort((x,y) => y.fitness.CompareTo(x.fitness));
