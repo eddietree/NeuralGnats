@@ -22,6 +22,9 @@ public class CreatureFrog : CreatureBase
         };
 
         threadMoving = StartCoroutine(HandleMovement());
+
+        transform.localScale = Vector3.one * FrogWorld.gridSize;
+        transform.position = FrogWorld.GridToWorldPos(gridPos);
     }
 
     public override void CreateNeuralNetwork()
@@ -102,13 +105,13 @@ public class CreatureFrog : CreatureBase
                 yield return null;
             }
 
-            // 
-            float stepSize = 1.0f;
+            float gridSize = FrogWorld.gridSize;
 
+            // 
             GridPos newGridPos = gridPos + gridDelta;
 
             // move to new pos
-            Vector3 newPos = new Vector3(newGridPos.x * stepSize, stepSize*0.5f, newGridPos.z * stepSize);
+            Vector3 newPos = new Vector3(newGridPos.x * gridSize, gridSize * 0.5f, newGridPos.z * gridSize);
             yield return transform.DOMove(newPos, 0.15f).SetEase(Ease.OutBack).WaitForCompletion();
 
             gridPos = newGridPos;
