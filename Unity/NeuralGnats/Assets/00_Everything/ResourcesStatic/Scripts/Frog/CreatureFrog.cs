@@ -10,6 +10,10 @@ public class CreatureFrog : CreatureBase
     [ReadOnly]
     public GridPos gridPos = new GridPos(0, 0);
 
+    int scanRangeForward = 5;
+    int scanRangeBackwards = 3;
+    int scanRangeSide = 3;
+
     void Start ()
     {
         gridPos.x = FrogWorld.numGridsX / 2;
@@ -29,7 +33,12 @@ public class CreatureFrog : CreatureBase
 
     public override void CreateNeuralNetwork()
     {
-        int numInputs = 4;
+        // scan grid range
+        int scanDimenX = scanRangeSide * 2 + 1;
+        int scanDimenY = scanRangeForward + scanRangeBackwards + 1;
+        int numInputs = scanDimenX * scanDimenY;
+
+        // the number of buttons
         int numOutputs = 4;
 
         int[] layerSizes = new int[] { numInputs, 7, numOutputs };
@@ -64,7 +73,7 @@ public class CreatureFrog : CreatureBase
                 fitness += 1.0f;
             }
         }
-    }*/
+    }
 
     void OnCollisionEnter2D(Collision2D collisionObj)
     {
@@ -72,7 +81,7 @@ public class CreatureFrog : CreatureBase
         {
             TriggerDeath();
         }
-    }
+    }*/
 
     IEnumerator HandleMovement()
     {

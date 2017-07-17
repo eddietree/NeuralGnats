@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GridData
 {
-    public GridPos gridPos = GridPos.Zero;
     public GameObject entity = null;
 }
 
@@ -58,8 +57,9 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
         {
             for (int x = 0; x < numGridsX; ++x)
             {
+                var gridPos = new GridPos(x, z);
+
                 var gridData = new GridData();
-                gridData.gridPos = new GridPos(x, z);
                 world.Add(gridData);
 
                 var isWall = z == 0 || x == 0 || x == (numGridsX - 1);
@@ -71,7 +71,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
                 {
                     var tree = GameObject.Instantiate(protoTree);
                     tree.transform.localScale = Vector3.one * gridSize;
-                    tree.transform.position = GridToWorldPos(gridData.gridPos);
+                    tree.transform.position = GridToWorldPos(gridPos);
 
                     gridData.entity = tree;
                 }
