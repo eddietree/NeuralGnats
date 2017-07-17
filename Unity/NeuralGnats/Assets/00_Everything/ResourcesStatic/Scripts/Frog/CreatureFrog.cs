@@ -218,8 +218,15 @@ public class CreatureFrog : CreatureBase
                     numTurnsLeft = Mathf.Max(numTurnsLeft, numTurnsReplenishedMoveForward);
 
                     maxGridZ = newGridPos.z;
-
                     fitness += 1.0f;
+
+                    // Finished!
+                    if (newGridPos.z >= FrogWorld.numGridsZ-1)
+                    {
+                        yield return transform.DOMove(newPos + Vector3.up * gridSize *0.5f, 0.2f).SetLoops(12, LoopType.Yoyo).WaitForCompletion();
+
+                        TriggerDeath();
+                    }
                 }
                 else // not moving forwad
                 {

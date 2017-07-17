@@ -11,7 +11,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
 {
     public static float gridSize = 0.5f;
     public const int numGridsX = 20;
-    public const int numGridsZ = 100;
+    public const int numGridsZ = 200;
 
     List<GridData> world = new List<GridData>();
 
