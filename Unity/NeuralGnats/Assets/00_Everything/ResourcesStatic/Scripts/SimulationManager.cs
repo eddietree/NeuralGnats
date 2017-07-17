@@ -39,6 +39,8 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
         int numNeuralNetsPassed = 4;
         List<NeuralNetwork> passedOnNeuralNet = new List<NeuralNetwork>();
 
+        prefabCreature.SetActive(false);
+
         // go thru all generations
         while (true)
         {
@@ -50,6 +52,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
             {
                 var creatureObj = GameObject.Instantiate(prefabCreature);
                 creatureObj.name = string.Format("Creature_{0}_{1}", generation, i);
+                creatureObj.SetActive(true);
 
                 // add creature
                 var creature = creatureObj.GetComponent<CreatureBase>();

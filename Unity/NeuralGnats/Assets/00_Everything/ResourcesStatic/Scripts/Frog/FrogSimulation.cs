@@ -4,14 +4,4 @@ using UnityEngine;
 
 public class FrogSimulation : SimulationBase
 {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }
