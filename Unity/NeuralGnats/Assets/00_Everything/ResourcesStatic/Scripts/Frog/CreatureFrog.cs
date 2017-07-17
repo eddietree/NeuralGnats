@@ -7,6 +7,8 @@ public class CreatureFrog : CreatureBase
 {
     Coroutine threadMoving = null;
 
+    public ParticleSystem particles;
+
     [ReadOnly]
     public GridPos gridPos = new GridPos(0, 0);
 
@@ -35,7 +37,10 @@ public class CreatureFrog : CreatureBase
             transform.DOKill(true);
             //transform.DOPunchRotation(Vector3.one * 15.0f, 0.4f, 10);
             transform.DORotateQuaternion(Quaternion.Euler(90.0f, 0.0f, 0.0f) * transform.rotation, 0.2f).SetEase(Ease.OutBack);
-            transform.DOScale(transform.localScale.x * 0.75f, 0.2f).SetEase(Ease.OutBack);
+
+            var newScale = transform.localScale;
+            newScale.Scale(new Vector3(0.75f, 0.75f, 0.75f));
+            transform.DOScale(newScale, 0.2f).SetEase(Ease.OutBack);
 
             this.StopAndNullify(ref threadMoving);
         };
@@ -202,6 +207,8 @@ public class CreatureFrog : CreatureBase
             }
             else // move to empty spot
             {
+                particles.Emit(2);
+
                 // move there
                 yield return transform.DOMove(newPos, 0.1f).SetEase(Ease.OutBack).WaitForCompletion();
 

@@ -17,6 +17,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
 
     public GameObject floor;
     public GameObject protoTree;
+    public TextMesh textMeshMarker;
 
 	void OnEnable()
     {
@@ -80,6 +81,18 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
         }
 
         protoTree.SetActive(false);
+
+        // markers
+        for (int z = 5; z < numGridsZ; z+=5)
+        {
+            var gridPos = new GridPos(-2, z);
+            var textPos = GridToWorldPos(gridPos);
+
+            var textObj = GameObject.Instantiate(textMeshMarker.gameObject);
+            textObj.transform.position = textPos;
+            textObj.GetComponent<TextMesh>().text = string.Format("{0} -", z);
+        }
+        textMeshMarker.gameObject.SetActive(false);
     }
 
     public bool HasObstacle(GridPos gridPos)
