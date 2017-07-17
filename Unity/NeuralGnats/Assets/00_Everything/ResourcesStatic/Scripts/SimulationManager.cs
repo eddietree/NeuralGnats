@@ -2,23 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class GenerationData
+{
+    public float maxFitness = 0.0f;
+    public float avgFitness = 0.0f;
+}
+
 public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManager>
 {
+    [ReadOnly]
     public int generation = 0;
+
+    [ReadOnly]
     float generationTimer = 0.0f;
 
-    [System.Serializable]
-    public class GenerationData
-    {
-        public float maxFitness = 0.0f;
-        public float avgFitness = 0.0f;
-    }
+    [ReadOnly]
     public List<GenerationData> generationFitness = new List<GenerationData>();
+
+    [ReadOnly]
     public List<CreatureBase> creatures = new List<CreatureBase>();
 
     public SimulationBase simulation;
     public GameObject prefabCreature;
-
     public int numCreaturesPerGen = 128;
 
     void Start ()
