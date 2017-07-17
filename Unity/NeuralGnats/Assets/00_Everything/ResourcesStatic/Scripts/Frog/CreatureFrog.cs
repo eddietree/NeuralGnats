@@ -12,8 +12,8 @@ public class CreatureFrog : CreatureBase
 
     void Start ()
     {
-        Vector3 test = Vector3.one;
-        var t = test + Vector3.zero;
+        gridPos.x = FrogWorld.numGridsX / 2;
+        gridPos.z = 2;
 
         // add death state
         eventDeath += () =>
@@ -76,6 +76,8 @@ public class CreatureFrog : CreatureBase
 
     IEnumerator HandleMovement()
     {
+        FrogWorld frogWorld = FrogWorld.Instance;
+
         while (true)
         {
             UpdateNeuralNetOutput();
@@ -87,13 +89,13 @@ public class CreatureFrog : CreatureBase
                 if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
                     --gridDelta.x;
 
-                if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+                else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
                     ++gridDelta.x;
 
-                if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+                else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
                     --gridDelta.z;
 
-                if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+                else if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
                     ++gridDelta.z;
 
                 // TODO: neural network input
@@ -109,12 +111,22 @@ public class CreatureFrog : CreatureBase
 
             // 
             GridPos newGridPos = gridPos + gridDelta;
-
-            // move to new pos
             Vector3 newPos = new Vector3(newGridPos.x * gridSize, gridSize * 0.5f, newGridPos.z * gridSize);
-            yield return transform.DOMove(newPos, 0.15f).SetEase(Ease.OutBack).WaitForCompletion();
 
-            gridPos = newGridPos;
+            if (frogWorld.HasObstacle(newGridPos))
+            {
+                var partPos = Vector3.Lerp(transform.position, newPos, 0.25f);
+                yield return transform.DOMove(partPos, 0.05f).SetLoops(2, LoopType.Yoyo).WaitForCompletion();
+
+            }
+            else
+            {
+                // move there
+                yield return transform.DOMove(newPos, 0.1f).SetEase(Ease.OutBack).WaitForCompletion();
+
+                gridPos = newGridPos;
+            }
+            
 
             /*lifeSpan -= Time.deltaTime;
             if (lifeSpan < 0.0f)
