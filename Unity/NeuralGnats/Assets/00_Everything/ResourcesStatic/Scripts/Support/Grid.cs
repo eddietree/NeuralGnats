@@ -13,9 +13,17 @@ public struct GridPos
         z = gridPosZ;
     }
 
+    public static GridPos Zero { get { return new GridPos(0, 0); }  }
+    public static GridPos One { get { return new GridPos(1, 1); } }
+
     public static GridPos operator +(GridPos a, GridPos b)
     {
         return new GridPos(a.x+b.x, a.z+b.z);
+    }
+
+    public static GridPos operator -(GridPos a)
+    {
+        return new GridPos(-a.x, -a.z);
     }
 
     public static GridPos operator -(GridPos a, GridPos b)
