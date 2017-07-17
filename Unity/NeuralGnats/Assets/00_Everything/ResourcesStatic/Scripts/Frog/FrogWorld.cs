@@ -50,6 +50,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
     void CreateObstacles()
     {
         var perlinScale = 25.0f / Mathf.Max(numGridsX, numGridsZ);
+        var perlinThreshold = 0.35f;
 
         float aspect = (float)numGridsZ / (float)numGridsX;
 
@@ -67,7 +68,7 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
                 if (!isWall && z < 4)
                     continue;
 
-                if (isWall || Mathf.PerlinNoise((float)x * aspect * perlinScale, (float)z * perlinScale) < 0.3f)
+                if (isWall || Mathf.PerlinNoise((float)x * aspect * perlinScale, (float)z * perlinScale) < perlinThreshold)
                 {
                     var tree = GameObject.Instantiate(protoTree);
                     tree.transform.localScale = Vector3.one * gridSize;

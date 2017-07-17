@@ -10,19 +10,31 @@ public class CreatureFrog : CreatureBase
     [ReadOnly]
     public GridPos gridPos = new GridPos(0, 0);
 
-    int scanRangeForward = 5;
-    int scanRangeBackwards = 3;
-    int scanRangeSide = 3;
+    int scanRangeForward = 5; // +z
+    int scanRangeBackwards = 3; // -z
+    int scanRangeSide = 3; // +/- x
+
+    int maxGridZ = 2;
+
+    [ReadOnly]
+    public int numTurnsLeft = 5;
+    int numTurnsReplenishedMoveForward = 10;
 
     void Start ()
     {
         gridPos.x = FrogWorld.numGridsX / 2;
-        gridPos.z = 2;
+        gridPos.z = maxGridZ;
 
         // add death state
         eventDeath += () =>
         {
-           
+            transform.Find("Body").GetComponent<MeshRenderer>().material.SetColor("_Color", Color.red);
+
+            transform.DOKill(true);
+            transform.DOPunchRotation(Vector3.one * 15.0f, 0.4f, 10);
+            transform.DOScale(transform.localScale.x * 0.75f, 0.2f).SetEase(Ease.OutBack);
+
+            this.StopAndNullify(ref threadMoving);
         };
 
         threadMoving = StartCoroutine(HandleMovement());
@@ -47,10 +59,32 @@ public class CreatureFrog : CreatureBase
 
     void UpdateNeuralNetOutput()
     {
-        // TODO feed input
-        //neuralNetInput[0] = 0.0f;
+        var inputIndex = 0;
+        var frogWorld = FrogWorld.Instance;
 
-        //neuralNet.FeedForward(neuralNetInput);
+        for (int z = -scanRangeBackwards; z <= scanRangeForward; ++z)
+        {
+            for (int x = -scanRangeSide; x <= scanRangeSide; ++x)
+            {
+                var scanGridPos = (new GridPos(x, z)) + gridPos;
+
+                // not valid
+                if (!frogWorld.IsValidGridPos(scanGridPos))
+                    neuralNetInput[inputIndex] = 2;
+
+                // obstacle
+                else if (frogWorld.HasObstacle(scanGridPos))
+                    neuralNetInput[inputIndex] = 1;
+
+                // open!
+                else
+                    neuralNetInput[inputIndex] = 0;
+
+                ++inputIndex;
+            }
+        }
+
+        neuralNet.FeedForward(neuralNetInput);
     }
 
     /*void OnTriggerEnter2D(Collider2D collisionObj)
@@ -86,6 +120,7 @@ public class CreatureFrog : CreatureBase
     IEnumerator HandleMovement()
     {
         FrogWorld frogWorld = FrogWorld.Instance;
+        float gridSize = FrogWorld.gridSize;
 
         while (true)
         {
@@ -93,6 +128,7 @@ public class CreatureFrog : CreatureBase
 
             GridPos gridDelta = new GridPos(0, 0);
 
+            // wait for input
             while (true)
             {
                 if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
@@ -107,13 +143,37 @@ public class CreatureFrog : CreatureBase
                 else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
                     ++gridDelta.z;
 
-                if (Random.Range(0,2) == 0)
+                /*if (Random.Range(0,2) == 0)
                     gridDelta.x = Random.Range(0, 3) - 1;
                 else
-                    gridDelta.z = Random.Range(0, 3) - 1;
+                    gridDelta.z = Random.Range(0, 3) - 1;*/
 
-                // TODO: neural network input
-                //neuralNet.GetOutputData(0);
+                // neural network input
+                var maxIndex = -1;
+                var maxVal = -99.0f;
+                for(int i = 0; i < 4; ++i)
+                {
+                    var val = neuralNet.GetOutputData(i);
+
+                    if (Mathf.Abs(val) > maxVal)
+                    {
+                        maxVal = Mathf.Abs(val);
+                        maxIndex = i;
+                    }
+                }
+
+                var inputValThreshold = 0.2f;
+                if (maxVal > inputValThreshold)
+                {
+                    if (maxIndex == 0)
+                            gridDelta.x += 1;
+                    if (maxIndex == 1)
+                        gridDelta.x -= 1;
+                    if (maxIndex == 2)
+                        gridDelta.z -= 1;
+                    if (maxIndex == 3)
+                        gridDelta.z += 1;
+                }
 
                 if (gridDelta.x != 0 || gridDelta.z != 0)
                     break;
@@ -121,9 +181,7 @@ public class CreatureFrog : CreatureBase
                 yield return null;
             }
 
-            float gridSize = FrogWorld.gridSize;
-
-            // 
+            // new grid pos
             GridPos newGridPos = gridPos + gridDelta;
             Vector3 newPos = new Vector3(newGridPos.x * gridSize, gridSize * 0.5f, newGridPos.z * gridSize);
 
@@ -134,6 +192,8 @@ public class CreatureFrog : CreatureBase
             // hits wall
             if (frogWorld.HasObstacle(newGridPos))
             {
+                --numTurnsLeft;
+
                 var partPos = Vector3.Lerp(transform.position, newPos, 0.25f);
                 yield return transform.DOMove(partPos, 0.05f).SetLoops(2, LoopType.Yoyo).WaitForCompletion();
             }
@@ -142,12 +202,26 @@ public class CreatureFrog : CreatureBase
                 // move there
                 yield return transform.DOMove(newPos, 0.1f).SetEase(Ease.OutBack).WaitForCompletion();
 
+                // moving forward
+                if (newGridPos.z > maxGridZ)
+                {
+                    numTurnsLeft = Mathf.Max(numTurnsLeft, numTurnsReplenishedMoveForward);
+
+                    maxGridZ = newGridPos.z;
+
+                    fitness += 1.0f;
+                }
+                else // not moving forwad
+                {
+                    --numTurnsLeft;
+                }
+
                 gridPos = newGridPos;
             }
 
-            /*lifeSpan -= Time.deltaTime;
-            if (lifeSpan < 0.0f)
-                TriggerDeath();*/
+            // no more turns left
+            if (numTurnsLeft < 0)
+                TriggerDeath();
 
             yield return null;
         }
