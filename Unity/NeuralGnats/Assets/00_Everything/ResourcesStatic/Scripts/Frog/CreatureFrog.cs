@@ -174,6 +174,7 @@ public class CreatureFrog : CreatureBase
                     gridDelta.x += 1;
                 if (maxIndex == 1)
                     gridDelta.x -= 1;
+                if (maxIndex == 2)
                     gridDelta.z -= 1;
                 if (maxIndex == 3)
                     gridDelta.z += 1;
