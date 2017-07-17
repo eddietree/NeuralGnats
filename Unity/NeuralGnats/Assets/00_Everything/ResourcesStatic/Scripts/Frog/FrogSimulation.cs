@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class FrogSimulation : SimulationBase
 {
+    Vector3 camDelta = new Vector3(10.0f, 10.0f, -10.0f);
+
+    public override void OnStartSimulation()
+    {
+        base.OnStartSimulation();
+
+        var camera = Camera.main;
+        camera.transform.position = camDelta;
+        camera.transform.LookAt(Vector3.one);
+    }
+
     override public void OnUpdateSimulation()
     {
         base.OnUpdateSimulation();
@@ -33,11 +44,13 @@ public class FrogSimulation : SimulationBase
             var dimenX = maxX - minX;
             var dimenY = maxZ - minZ;
 
+            var focusPos = new Vector3(centerX, 0.0f, centerZ);
+
             var camPos = camera.transform.position;
-            var camPosNew = new Vector3(centerX, camPos.y, centerZ);
+            var camPosNew = focusPos + camDelta;
 
             camera.transform.position = Vector3.Lerp(camPos, camPosNew, 0.001f);
-            camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, Mathf.Max(dimenX, dimenY) + 4.0f, 0.001f);
+            //camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, Mathf.Max(dimenX, dimenY) + 4.0f, 0.001f);
         }
     }
 }

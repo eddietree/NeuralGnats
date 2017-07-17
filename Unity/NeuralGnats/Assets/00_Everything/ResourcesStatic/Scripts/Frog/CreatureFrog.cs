@@ -207,7 +207,7 @@ public class CreatureFrog : CreatureBase
             }
             else // move to empty spot
             {
-                particles.Emit(2);
+                particles.Emit(1);
 
                 // move there
                 yield return transform.DOMove(newPos, 0.1f).SetEase(Ease.OutBack).WaitForCompletion();

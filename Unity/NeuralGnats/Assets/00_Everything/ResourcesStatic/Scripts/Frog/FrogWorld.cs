@@ -23,11 +23,6 @@ public class FrogWorld : SingletonMonoBehaviourOnDemand<FrogWorld>
     {
         CreateWorld();
 	}
-	
-	void Update ()
-    {
-		
-	}
 
     public static Vector3 GridToWorldPos(GridPos gridPos)
     {
