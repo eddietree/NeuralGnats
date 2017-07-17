@@ -170,18 +170,13 @@ public class CreatureFrog : CreatureBase
                     }
                 }
 
-                var inputValThreshold = 0.2f;
-                if (maxVal > inputValThreshold)
-                {
-                    if (maxIndex == 0)
-                            gridDelta.x += 1;
-                    if (maxIndex == 1)
-                        gridDelta.x -= 1;
-                    if (maxIndex == 2)
-                        gridDelta.z -= 1;
-                    if (maxIndex == 3)
-                        gridDelta.z += 1;
-                }
+                if (maxIndex == 0)
+                    gridDelta.x += 1;
+                if (maxIndex == 1)
+                    gridDelta.x -= 1;
+                    gridDelta.z -= 1;
+                if (maxIndex == 3)
+                    gridDelta.z += 1;
 
                 if (gridDelta.x != 0 || gridDelta.z != 0)
                     break;
