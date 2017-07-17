@@ -146,7 +146,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
     {
         var myStyle = new GUIStyle();
         myStyle.font = debugFont;
-        myStyle.fontSize = 32;
+        myStyle.fontSize = 48;
         myStyle.normal.textColor = Color.white;
 
         var strGeneration = string.Format("Generation: {0}", generation);
@@ -155,7 +155,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
         // gen time left
         myStyle.fontSize = 18;
         var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
-        GUI.Label(new Rect(10, 40, 100, 20), strTimeLeft, myStyle);
+        GUI.Label(new Rect(10, 60, 100, 20), strTimeLeft, myStyle);
 
         // print previous generations
         for(int i = 0; i < Mathf.Min(15, generationFitness.Count); ++i)
@@ -164,7 +164,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
 
             var data = generationFitness[genIndex];
             var generationStr = string.Format("Gen {0}: {1:0.00}", genIndex, data.avgFitness);
-            GUI.Label(new Rect(10, 70 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
+            GUI.Label(new Rect(10, 80 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
         }
     }
 }

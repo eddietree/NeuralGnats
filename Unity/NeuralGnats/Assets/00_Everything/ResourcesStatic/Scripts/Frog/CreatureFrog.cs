@@ -16,6 +16,8 @@ public class CreatureFrog : CreatureBase
 
     int maxGridZ = 2;
 
+    public MeshRenderer mesh;
+
     [ReadOnly]
     public int numTurnsLeft = 5;
     int numTurnsReplenishedMoveForward = 10;
@@ -28,10 +30,11 @@ public class CreatureFrog : CreatureBase
         // add death state
         eventDeath += () =>
         {
-            transform.Find("Body").GetComponent<MeshRenderer>().material.SetColor("_Color", Color.red);
+            mesh.material.SetColor("_Color", Color.white * 0.3f);
 
             transform.DOKill(true);
-            transform.DOPunchRotation(Vector3.one * 15.0f, 0.4f, 10);
+            //transform.DOPunchRotation(Vector3.one * 15.0f, 0.4f, 10);
+            transform.DORotateQuaternion(Quaternion.Euler(90.0f, 0.0f, 0.0f) * transform.rotation, 0.2f).SetEase(Ease.OutBack);
             transform.DOScale(transform.localScale.x * 0.75f, 0.2f).SetEase(Ease.OutBack);
 
             this.StopAndNullify(ref threadMoving);
