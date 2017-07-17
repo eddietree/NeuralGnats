@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimulationManager : MonoBehaviour {
-
+public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManager>
+{
     public int generation = 0;
     float generationTimer = 0.0f;
 
@@ -14,46 +14,20 @@ public class SimulationManager : MonoBehaviour {
         public float avgFitness = 0.0f;
     }
     public List<GenerationData> generationFitness = new List<GenerationData>();
+    public List<CreatureBase> creatures = new List<CreatureBase>();
 
+    public SimulationBase simulation;
     public GameObject prefabCreature;
-    public GameObject prefabFood;
 
     public TextMesh textGeneration;
     public TextMesh textGenerationTime;
-
-    float foodSpawnRange = 1.75f;
-    float creatureSpawnRange = 0.1f;
+    
     public int numCreaturesPerGen = 128;
-
-    HashSet<GameObject> touchedZones = new HashSet<GameObject>();
 
     void Start ()
     {
         Application.runInBackground = true;
         StartCoroutine(DoHandleGenerations());
-
-        InitZones();
-    }
-
-    void InitZones()
-    {
-        foreach (var zone in GameObject.FindObjectsOfType<Zone>())
-        {
-            var zoneCurr = zone;
-            zoneCurr.eventTouched += () =>
-            {
-                zoneCurr.GetComponent<SpriteRenderer>().material.color = Color.Lerp(Color.red, Color.yellow, Mathf.Clamp01((float)zoneCurr.numTouches / 32.0f)) * 0.5f;
-            };
-        }
-    }
-	
-    GameObject SpawnFoodItem()
-    {
-        var foodObj = GameObject.Instantiate(prefabFood);
-
-        foodObj.transform.position = new Vector3(Random.Range(-foodSpawnRange, foodSpawnRange), Random.Range(-foodSpawnRange, foodSpawnRange), 0.0f);
-
-        return foodObj;
     }
 
 	IEnumerator DoHandleGenerations()
@@ -67,9 +41,7 @@ public class SimulationManager : MonoBehaviour {
         {
             textGeneration.text = string.Format("Generation: {0}", generation);
 
-            //SpawnFoodItem();
-
-            List<CreatureBase> creatures = new List<CreatureBase>();
+            creatures.Clear();
 
             // create creatures
             int numCreaturesAlive = numCreaturesPerGen;
@@ -77,14 +49,14 @@ public class SimulationManager : MonoBehaviour {
             {
                 var creatureObj = GameObject.Instantiate(prefabCreature);
                 creatureObj.name = string.Format("Creature_{0}_{1}", generation, i);
-                
-                creatureObj.transform.position = new Vector3(Random.Range(-creatureSpawnRange, creatureSpawnRange), Random.Range(-creatureSpawnRange, creatureSpawnRange), 0.0f);
-                creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
-                //creatureObj.transform.rotation = Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f));
 
+                // add creature
                 var creature = creatureObj.GetComponent<CreatureBase>();
                 creature.CreateNeuralNetwork();
                 creatures.Add(creature);
+
+                // simluation
+                simulation.OnCreatureCreated(creature);
 
                 // grab another neural net from previous generation
                 if (passedOnNeuralNet.Count > 0)
@@ -106,44 +78,19 @@ public class SimulationManager : MonoBehaviour {
             // while simulation alive
             generationTimer = 0.0f;
 
-            var camera = Camera.main;
+            simulation.OnStartSimulation();
 
             while (numCreaturesAlive > 0)
             {
                 generationTimer += Time.deltaTime;
                 textGenerationTime.text = string.Format("Time: {0:0.00}", generationTimer);
 
-                var minX = 9999.0f;
-                var minY = 9999.0f;
-                var maxX = -9999.0f;
-                var maxY = -9999.0f;
-
-                foreach(var creature in creatures)
-                {
-                    if (creature.isDead)
-                        continue;
-
-                    var pos = creature.transform.position;
-
-                    minX = Mathf.Min(pos.x, minX);
-                    minY = Mathf.Min(pos.y, minY);
-                    maxX = Mathf.Max(pos.x, maxX);
-                    maxY = Mathf.Max(pos.y, maxY);
-
-                    var centerX = (minX + maxX) * 0.5f;
-                    var centerY = (minY + maxY) * 0.5f;
-                    var dimenX = maxX - minX;
-                    var dimenY = maxY - minY;
-
-                    var camPos = camera.transform.position;
-                    var camPosNew = new Vector3(centerX, centerY, camPos.z);
-
-                    camera.transform.position = Vector3.Lerp(camPos, camPosNew, 0.001f);
-                    camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, Mathf.Max(dimenX, dimenY) + 4.0f, 0.001f);
-                }
+                simulation.OnUpdateSimulation();
 
                 yield return null;
             }
+
+            simulation.OnStopSimulation();
 
             // sort creatures by fitness (descending)
             creatures.Sort((x,y) => y.fitness.CompareTo(x.fitness));
