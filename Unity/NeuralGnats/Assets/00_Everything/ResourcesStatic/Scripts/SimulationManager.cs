@@ -197,7 +197,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
             var genIndex = generationFitness.Count - 1 - i;
 
             var data = generationFitness[genIndex];
-            var generationStr = string.Format("Gen {0}: {1:0.00}", genIndex, data.avgFitness);
+            var generationStr = string.Format("Gen {0}: {1}, Avg {2:0.00}", genIndex, data.maxFitness, data.avgFitness);
             GUI.Label(new Rect(10, 140 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
         }
     }
