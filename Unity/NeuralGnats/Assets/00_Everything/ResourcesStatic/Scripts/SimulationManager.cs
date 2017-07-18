@@ -76,7 +76,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
                     simulation.OnCreatureCreated(creature);
 
                 // grab another neural net from previous generation
-                if (passedOnNeuralNet.Count > 0 && generation > 0)
+                if (passedOnNeuralNet.Count > 0)
                 {
                     var sourceNeuralNet = passedOnNeuralNet[i % passedOnNeuralNet.Count];
 
@@ -156,18 +156,39 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
 
     void OnGUI()
     {
+        // gen time left
+        int numCreaturesAlive = 0;
+        float maxFitness = 0.0f;
+        float avgFitness = 0.0f;
+        foreach (var creature in creatures)
+        {
+            if (!creature.isDead)
+                ++numCreaturesAlive;
+
+            maxFitness = Mathf.Max(creature.fitness, maxFitness);
+            avgFitness += creature.fitness;
+        }
+        avgFitness = avgFitness / creatures.Count;
+
         var myStyle = new GUIStyle();
         myStyle.font = debugFont;
-        myStyle.fontSize = 48;
         myStyle.normal.textColor = Color.white;
 
+        // headline
+        myStyle.fontSize = 48;
         var strGeneration = string.Format("Generation {0}", generation);
         GUI.Label(new Rect(10, 10, 100, 20), strGeneration, myStyle);
 
+        myStyle.fontSize = 18;
+
+        // max fitness
+        GUI.Label(new Rect(10, 60, 100, 20), string.Format("Max Fitness: {0} (Avg: {1:0.00})", maxFitness, avgFitness), myStyle);
+
+        // creatures left
+        GUI.Label(new Rect(10, 80, 100, 20), string.Format("Creatures: {0} / {1}", numCreaturesAlive, creatures.Count), myStyle);
+
         // gen time left
-        myStyle.fontSize = 24;
-        var strTimeLeft = string.Format("Time: {0:0.00}", generationTimer);
-        GUI.Label(new Rect(10, 55, 100, 20), strTimeLeft, myStyle);
+        GUI.Label(new Rect(10, 100, 100, 20), string.Format("Time: {0:0.00} s", generationTimer), myStyle);
 
         // print previous generations
         myStyle.fontSize = 18;
@@ -177,7 +198,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
 
             var data = generationFitness[genIndex];
             var generationStr = string.Format("Gen {0}: {1:0.00}", genIndex, data.avgFitness);
-            GUI.Label(new Rect(10, 100 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
+            GUI.Label(new Rect(10, 140 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
         }
     }
 }

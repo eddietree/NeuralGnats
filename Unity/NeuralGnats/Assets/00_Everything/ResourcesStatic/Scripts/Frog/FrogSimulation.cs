@@ -19,7 +19,7 @@ public class FrogSimulation : SimulationBase
 
         // Toggle Speed
         if (GUI.Button(new Rect(posX, posY, buttonWidth, buttonHeight), "Toggle Speed"))
-            simTimeScale = simTimeScale == 1.0f ? 0.1f : 1.0f;
+            simTimeScale = simTimeScale == 1.0f ? 0.05f : 1.0f;
 
         posY += buttonMargin + buttonHeight;
 
