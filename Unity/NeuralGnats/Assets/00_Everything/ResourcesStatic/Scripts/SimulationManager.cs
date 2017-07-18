@@ -191,14 +191,14 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
         GUI.Label(new Rect(10, 100, 100, 20), string.Format("Time: {0:0.00} s", generationTimer), myStyle);
 
         // print previous generations
-        myStyle.fontSize = 18;
+        myStyle.fontSize = 14;
         for (int i = 0; i < Mathf.Min(15, generationFitness.Count); ++i)
         {
             var genIndex = generationFitness.Count - 1 - i;
 
             var data = generationFitness[genIndex];
-            var generationStr = string.Format("Gen {0}: {1}, Avg {2:0.00}", genIndex, data.maxFitness, data.avgFitness);
-            GUI.Label(new Rect(10, 140 + (generationFitness.Count - genIndex) * 20, 100, 20), generationStr, myStyle);
+            var generationStr = string.Format("Gen {0}: Max {1} (Avg {2:0.00})", genIndex, data.maxFitness, data.avgFitness);
+            GUI.Label(new Rect(10, 140 + (generationFitness.Count - genIndex) * 17, 100, 20), generationStr, myStyle);
         }
     }
 }
