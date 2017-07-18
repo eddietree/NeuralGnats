@@ -27,10 +27,22 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
     public GameObject prefabCreature;
     public int numCreaturesPerGen = 128;
 
+    Coroutine threadRunSim = null;
+
     void Start ()
     {
         Application.runInBackground = true;
-        StartCoroutine(DoHandleGenerations());
+        threadRunSim = StartCoroutine(DoHandleGenerations());
+    }
+
+    public void RestartSimulation()
+    {
+        generation = 0;
+        generationFitness.Clear();
+        CleanUpSimulation();
+
+        this.StopAndNullify(ref threadRunSim);
+        threadRunSim = StartCoroutine(DoHandleGenerations());
     }
 
 	IEnumerator DoHandleGenerations()
@@ -64,7 +76,7 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
                     simulation.OnCreatureCreated(creature);
 
                 // grab another neural net from previous generation
-                if (passedOnNeuralNet.Count > 0)
+                if (passedOnNeuralNet.Count > 0 && generation > 0)
                 {
                     var sourceNeuralNet = passedOnNeuralNet[i % passedOnNeuralNet.Count];
 
@@ -124,15 +136,20 @@ public class SimulationManager : SingletonMonoBehaviourOnDemand<SimulationManage
                 passedOnNeuralNet.Add(neuralNetNew);
             }
 
-            // delete all old creatures
-            for (int i = 0; i < creatures.Count; ++i)
-                GameObject.Destroy(creatures[i].gameObject);
+            CleanUpSimulation();
 
             // next generation
             ++generation;
 
             yield return null;
         }
+    }
+
+    void CleanUpSimulation()
+    {
+        // delete all old creatures
+        for (int i = 0; i < creatures.Count; ++i)
+            GameObject.Destroy(creatures[i].gameObject);
     }
 
     public Font debugFont;

@@ -6,6 +6,28 @@ public class FrogSimulation : SimulationBase
 {
     Vector3 camDelta = new Vector3(10.0f, 10.0f, -10.0f);
 
+    public static float simTimeScale = 1.0f;
+
+    private void OnGUI()
+    {
+        var buttonWidth = 130;
+        var buttonHeight = 25;
+        var buttonMargin = 6;
+
+        var posX = Screen.width - buttonWidth - buttonMargin;
+        var posY = buttonMargin;
+
+        // Toggle Speed
+        if (GUI.Button(new Rect(posX, posY, buttonWidth, buttonHeight), "Toggle Speed"))
+            simTimeScale = simTimeScale == 1.0f ? 0.1f : 1.0f;
+
+        posY += buttonMargin + buttonHeight;
+
+        // reset simulation
+        if (GUI.Button(new Rect(posX, posY, buttonWidth, buttonHeight), "Reset Simulation"))
+            SimulationManager.Instance.RestartSimulation();
+    }
+
     public override void OnStartSimulation()
     {
         base.OnStartSimulation();

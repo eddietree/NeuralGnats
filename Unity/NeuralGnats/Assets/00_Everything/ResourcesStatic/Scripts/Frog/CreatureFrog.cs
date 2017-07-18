@@ -185,13 +185,15 @@ public class CreatureFrog : CreatureBase
                 yield return null;
             }
 
+            var simTimeScale = FrogSimulation.simTimeScale;
+
             // new grid pos
             GridPos newGridPos = gridPos + gridDelta;
             Vector3 newPos = new Vector3(newGridPos.x * gridSize, gridSize * 0.5f, newGridPos.z * gridSize);
 
             // turn
             var turnAngle = Mathf.Rad2Deg * Mathf.Atan2(-gridDelta.z, gridDelta.x) + 90f;
-            transform.DORotate(new Vector3(0.0f, turnAngle, 0.0f), 0.1f).SetEase(Ease.OutBack);
+            transform.DORotate(new Vector3(0.0f, turnAngle, 0.0f), 0.1f * simTimeScale).SetEase(Ease.OutBack);
 
             // hits wall
             if (frogWorld.HasObstacle(newGridPos))
@@ -199,14 +201,14 @@ public class CreatureFrog : CreatureBase
                 --numTurnsLeft;
 
                 var partPos = Vector3.Lerp(transform.position, newPos, 0.25f);
-                yield return transform.DOMove(partPos, 0.05f).SetLoops(2, LoopType.Yoyo).WaitForCompletion();
+                yield return transform.DOMove(partPos, 0.05f * simTimeScale).SetLoops(2, LoopType.Yoyo).WaitForCompletion();
             }
             else // move to empty spot
             {
                 particles.Emit(1);
 
                 // move there
-                yield return transform.DOMove(newPos, 0.1f).SetEase(Ease.OutBack).WaitForCompletion();
+                yield return transform.DOMove(newPos, 0.1f * simTimeScale).SetEase(Ease.OutBack).WaitForCompletion();
 
                 // moving forward
                 if (newGridPos.z > maxGridZ)
